@@ -265,7 +265,7 @@ so check the wasm actually loads rather than assuming.
 
 ---
 
-## Phase 4 — Retire the old URLs *(don't just delete them)*
+## Phase 4 — Retire the old URLs ✅ *done 2026-09-01*
 
 **Three hosts, not one.** pbn-to-pdf was never a special case — the current-state
 table above simply recorded dealer3 and bridge-solver wrongly. All three are
@@ -432,11 +432,11 @@ it creep.
       and the Worker's temporary route for it removed.)*
 - [x] `solver.` and `dealer.` still answer — untouched, and NOT repurposed
       *(both 422 on an empty body in <110ms, 2026-09-01)*
-- [ ] The bridge-classroom hub tile points somewhere live
-      *(still `pbn-to-pdf.bridge-classroom.org`, in `docs/index.html`. Live
-      either way — 200 now, 301 once the rule exists — but it is the last
-      thing depending on the old host, so Phase 6 should repoint it. That repo
-      had uncommitted work in flight on 2026-09-01, so it was left alone.)*
+- [x] The bridge-classroom hub tiles point somewhere live
+      *(all three repointed to the new paths, plus the ingest page's solver
+      link — Bridge-Classroom #412. What remains of Phase 6 is the choice
+      between three tool tiles and one tile pointing at bridge-craftwork.com,
+      and the CLAUDE.md/Caddyfile notes.)*
 
 ---
 
