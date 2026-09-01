@@ -6,17 +6,10 @@
  * invoking this Worker, so a request that reaches the fall-through matched no
  * asset and is handed back to ASSETS for a 404.
  *
- * Phase 2 (next): the tool-path router lands here — a known prefix like
- * `/dealer3/` proxies to that tool's own Pages project with the prefix
- * stripped, so each repo's `_headers` path rules keep working untouched.
- *
- * Two things will break first when that arrives, both quietly:
- *
- *   1. `/tool` must redirect to `/tool/`. Every tool builds with relative asset
- *      URLs, so without the trailing slash they resolve against the wrong base.
- *   2. The origin's response headers must survive the hop. dealer3 needs its
- *      COOP/COEP for threaded wasm, and every repo's `_headers` carries cache
- *      rules. Construct the response so they are preserved, not rebuilt.
+ * Phase 2: a known tool prefix like `/dealer3/` proxies to that tool's own
+ * project with the prefix stripped. See TOOLS and proxyTool below — the
+ * trailing-slash redirect and header preservation both live there, and both
+ * fail quietly rather than loudly when they are wrong.
  */
 
 const APEX = 'bridge-craftwork.com'
@@ -151,6 +144,79 @@ async function download(request, url, ctx) {
   return Response.redirect(`${releasePage}/download/${spec.name(platform, version)}`, 302)
 }
 
+// Phase 2 — each tool's browser build, mounted on a path here and served from
+// its own project. The prefix is stripped and the remainder appended to the
+// base, so each origin keeps serving from ITS root and every repo's `_headers`
+// path rules (`/assets/*`, `/index.html`) keep working untouched.
+//
+// Keyed by path prefix; TOOLS above is keyed by repo name and is about release
+// assets. Two different things, deliberately not merged.
+const TOOL_ORIGINS = {
+  '/pbn-to-pdf': 'https://pbn-to-pdf.pages.dev',
+  '/dealer3': 'https://dealer3.pages.dev',
+  '/bridge-solver': 'https://bridge-solver.pages.dev',
+
+  // INTERIM: pdf-handouts is the one tool still on GitHub Pages, and its
+  // `pdf-handouts.pages.dev` does not exist yet — Phase 3 creates it. Its
+  // GitHub Pages site is served under /pdf-handouts/, so that path is part of
+  // the base here and the arithmetic below is unchanged. Phase 3 swaps this
+  // one line for the pages.dev origin.
+  '/pdf-handouts': 'https://bridge-craftwork.github.io/pdf-handouts',
+}
+
+/** Exact segment match, so `/dealer3-notes` never routes to `/dealer3`. */
+function matchTool(pathname) {
+  for (const prefix of Object.keys(TOOL_ORIGINS)) {
+    if (pathname === prefix || pathname.startsWith(prefix + '/')) return prefix
+  }
+  return null
+}
+
+async function proxyTool(request, url, prefix) {
+  const base = TOOL_ORIGINS[prefix]
+
+  // `/tool` -> `/tool/`. Every tool builds with relative asset URLs, so without
+  // the trailing slash they resolve against the wrong base and the page loads
+  // with nothing in it. This is the first thing that breaks if it is missed.
+  if (url.pathname === prefix) {
+    url.pathname = prefix + '/'
+    return Response.redirect(url.toString(), 301)
+  }
+
+  const target = new URL(base + url.pathname.slice(prefix.length))
+  target.search = url.search
+
+  const upstream = await fetch(new Request(target, request), { redirect: 'manual' })
+
+  // A redirect from the origin points into the origin's own path space. Left
+  // alone it would bounce the visitor onto pages.dev and straight out of this
+  // site, so map it back into ours.
+  const location = upstream.headers.get('location')
+  if (location) {
+    const abs = new URL(location, target)
+    const baseUrl = new URL(base)
+    if (abs.origin === baseUrl.origin) {
+      const basePath = baseUrl.pathname.replace(/\/+$/, '')
+      const inner =
+        basePath && abs.pathname.startsWith(basePath)
+          ? abs.pathname.slice(basePath.length)
+          : abs.pathname
+      const headers = new Headers(upstream.headers)
+      headers.set('location', prefix + (inner || '/') + abs.search)
+      return new Response(upstream.body, {
+        status: upstream.status,
+        statusText: upstream.statusText,
+        headers,
+      })
+    }
+  }
+
+  // Returned as-is so the ORIGIN'S headers survive the hop: dealer3's
+  // COOP/COEP for its threaded wasm, and every repo's `_headers` cache rules.
+  // Rebuilding the response here would drop them, silently.
+  return upstream
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url)
@@ -171,6 +237,9 @@ export default {
     }
 
     if (url.pathname.startsWith('/download/')) return download(request, url, ctx)
+
+    const tool = matchTool(url.pathname)
+    if (tool) return proxyTool(request, url, tool)
 
     return env.ASSETS.fetch(request)
   },
