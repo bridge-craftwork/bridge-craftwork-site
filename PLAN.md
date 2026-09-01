@@ -369,16 +369,37 @@ stated in #3; the parts that land in THIS repo are:
 - `/llms.txt` — the index, covering all four tools, linking to each tool's
   `reference.txt` and to the docs below. Tool-general from the start: it lives
   at the apex and is written once.
-- `/robots.txt` with content signals. **One file governs all four tools**,
-  because they are on paths — under the rejected subdomain scheme this would
-  have been four files. Note Cloudflare already injects a *managed* Content
-  Signals robots.txt at the zone level, so replacing it needs verifying after
-  deploy.
+- `/robots.txt` with content signals, **all three yes**:
+
+  ```
+  User-agent: *
+  Content-Signal: search=yes, ai-input=yes, ai-train=yes
+  Allow: /
+  ```
+
+  `ai-train=yes` is consistent with the licensing rather than a new position —
+  four of five repos are Unlicense, under which training is already permitted,
+  so declining would be symbolic while the same content sits freely licensed on
+  GitHub. Unset would not have been a refusal either: the policy says no signal
+  "neither grants nor restricts".
+
+  **One file governs all four tools**, because they are on paths — under the
+  rejected subdomain scheme this would have been four files kept in sync by
+  hand. Note Cloudflare already injects a *managed* Content Signals robots.txt
+  at the zone level, so replacing it needs verifying after deploy.
 - `/sitemap.xml`.
 - Serving the house-style guide derived from the scenario corpus.
 
 Each tool's own `reference.txt`, JS API, diagnostics and real 404s belong in
-that tool's repo, per the rule at the top of CLAUDE.md.
+that tool's repo, per the rule at the top of CLAUDE.md. Decided in #3:
+`reference.txt` lives at `/<tool>/reference.txt` next to the generator that
+emits it — which is what makes a drift check possible — and the JS surface is
+`window.<tool>` with uniform method names, since each tool also runs standalone
+at its own `pages.dev`.
+
+That has one consequence for this repo: `llms.txt` links across the repo
+boundary, so it is only correct once a tool has shipped its mirror. It should
+list the tools that have one and grow as the others land.
 
 **These should be built together with the human docs, not before them** — the
 index wants something to index. The docs here are static HTML with no hydration,
