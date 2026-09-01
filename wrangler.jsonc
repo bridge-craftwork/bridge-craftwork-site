@@ -21,6 +21,28 @@
   // wiring is here rather than being a hosting change disguised as a feature.
   "main": "src/index.js",
 
+  // Custom domains. Unlike a PAGES project — where custom domains are
+  // dashboard/API state that wrangler will not create (see the note in
+  // pbn-to-pdf/wrangler.jsonc) — a WORKER's custom domains are config, and
+  // `wrangler deploy` creates the proxied DNS records for them. So the
+  // hostnames this Worker answers on are a reviewable diff, like everything
+  // else about the deploy.
+  //
+  // Cloudflare's CNAME flattening is what makes the apex work.
+  //
+  // Both hostnames serve the site. Which one is CANONICAL — with the other
+  // redirecting — is still open (PLAN.md), and is a separate change: a zone
+  // Redirect Rule, or a redirect in src/index.js. Attaching both first is
+  // what makes that decision reversible.
+  //
+  // These touch ONLY the apex and www. The service subdomains — solver.,
+  // ben., dealer., tables., game-parser. — are DNS-only records pointing at
+  // the droplet and are not affected. Subdomains are machines, paths are pages.
+  "routes": [
+    { "pattern": "bridge-craftwork.com", "custom_domain": true },
+    { "pattern": "www.bridge-craftwork.com", "custom_domain": true }
+  ],
+
   "observability": { "enabled": true },
 
   // Static assets are matched FIRST; anything with no matching asset falls
