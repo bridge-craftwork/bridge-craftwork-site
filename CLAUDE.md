@@ -30,9 +30,15 @@ DigitalOcean droplet behind a shared Caddy proxy (see the private
 The **browser tool builds** this site launches are Cloudflare Pages projects.
 They do **not** pass through Caddy and do not touch the droplet.
 
-⚠️ `solver.` and `dealer.` are **already taken by the services**. The
-`bridge-solver` browser build therefore cannot use `solver.` — see the naming
-collision section in PLAN.md, which is the one blocking question.
+⚠️ `solver.` and `dealer.` are **already taken by the live services** — both
+verified answering on 2026-08-31, and both hardcoded as production defaults in
+the Bridge-Classroom frontend (`ddsClient.js`, `dealerClient.js`). Do not
+repurpose them. A 404 at `/` means "no route at the root", not "nothing there";
+probe a real endpoint before concluding a host is free.
+
+**Hostname convention:** a backend service is named for its *capability*
+(`solver.`, `dealer.`); a browser build is named for its *repo*
+(`bridge-solver.`, `dealer3.`). See PLAN.md.
 
 ## Git
 

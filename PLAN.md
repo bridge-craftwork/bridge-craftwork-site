@@ -68,8 +68,8 @@ Four tools, two domains, three hosting shapes, one `github.io` URL.
 bridge-craftwork.com                 → this repo (launcher)
 pbn-to-pdf.bridge-craftwork.com      → pbn-to-pdf/web
 dealer3.bridge-craftwork.com         → dealer3/web
-handouts.bridge-craftwork.com        → pdf-handouts/web
-solver.bridge-craftwork.com          → ⚠️ TAKEN — see "Naming collision" below
+pdf-handouts.bridge-craftwork.com    → pdf-handouts/web
+bridge-solver.bridge-craftwork.com   → bridge-solver/web
 ```
 
 Unchanged and untouched: `solver.`, `ben.`, `dealer.`, `tables.`,
@@ -77,18 +77,39 @@ Unchanged and untouched: `solver.`, `ben.`, `dealer.`, `tables.`,
 
 ---
 
-## ⚠️ Naming collision — resolve before Phase 2
+## Hostname convention — collision resolved
 
-`solver.bridge-craftwork.com` **is already the live double-dummy solver
-service** (the `bridge-solver-service` HTTP API that Bridge-Classroom's
-`ddsClient.js` calls). It cannot host the `bridge-solver` browser build.
+**Verified live on 2026-08-31.** `solver.` and `dealer.` were checked directly,
+not assumed. A 404 at `/` means only "no route at the root"; the real endpoints
+answer:
 
-`dealer.bridge-craftwork.com` is likewise the live deal-generator service, which
-is why the table above proposes `dealer3.` for the browser build.
+```
+POST solver.bridge-craftwork.com/dd    → 200 in 99ms
+                                          {"ddtricks":"dcccddcccd00000V000V","cached":false}
+POST dealer.bridge-craftwork.com/deal  → 422, serde naming the field it wants (`script`)
+```
 
-Pick a non-colliding host for the bridge-solver web build before attaching any
-domain — `solver-web.`, `dd.`, or `bridge-solver.` are all free. **This is the
-one blocking question in the plan.**
+Both are also hardcoded as production defaults in the shipped Bridge-Classroom
+frontend — `ddsClient.js` (`VITE_SOLVER_URL ||` that host, with
+`.env.production` deliberately leaving the override unset) and
+`dealerClient.js`. Repurposing either would point the live `.com`/`.org` site at
+a static page: the solver would degrade quietly (DD is best-effort, `null` on
+failure), the deal generator would visibly break the hub tile.
+
+**So the two kinds of host get two kinds of name:**
+
+| Kind | Naming | Examples |
+| --- | --- | --- |
+| Backend HTTP service (droplet, behind Caddy) | the **capability** | `solver.` `dealer.` `ben.` `tables.` `game-parser.` |
+| Browser build of a CLI (Cloudflare Pages) | the **repo name** | `pbn-to-pdf.` `dealer3.` `bridge-solver.` `pdf-handouts.` |
+
+This scales to the next tool without another collision, and the hostname alone
+tells you which kind of thing you are looking at — worth having when an API and
+a browser build of the *same* algorithm sit on adjacent hostnames.
+
+Applied: the bridge-solver web build gets **`bridge-solver.bridge-craftwork.com`**,
+not `solver.`. Nothing is deployed yet, so this is still cheap to change —
+but change it before Phase 2, not after.
 
 ---
 
@@ -161,8 +182,8 @@ Then record the hostname in that repo's `wrangler.jsonc` header comment, the way
 `pbn-to-pdf` already does — the config file is where someone will look.
 
 Order: `pbn-to-pdf` first (proves the pattern on a project that already has a
-working custom domain), then `dealer3`, then `bridge-solver` — **after** the
-naming collision is settled.
+working custom domain), then `dealer3`, then `bridge-solver`
+(on `bridge-solver.`, per the hostname convention above).
 
 `bridge-solver` carries Pages Functions, a KV namespace and an Analytics Engine
 binding. Adding a custom domain doesn't touch those, but its `/t` beacon and
@@ -179,7 +200,7 @@ straight to GitHub Pages.
 1. Add `wrangler.jsonc` with `"pages_build_output_dir": "web"`.
 2. Replace the `upload-pages-artifact` + `deploy` jobs with a
    `wrangler pages deploy` step (copy from `dealer3`).
-3. Attach `handouts.bridge-craftwork.com`.
+3. Attach `pdf-handouts.bridge-craftwork.com`.
 4. Leave a redirect stub at `bridge-craftwork.github.io/pdf-handouts/` — a
    `<meta http-equiv="refresh">` plus a `<link rel="canonical">`. The README
    links that URL, and so may other people.
@@ -226,16 +247,15 @@ bridge-classroom.com/.org hub** (shipped 2026-08-31, PR #411). It must not
 
 ## Open questions
 
-1. **The bridge-solver hostname collision** — blocking Phase 2 for that tool.
-2. **Favicon / visual identity.** Reusing the classroom's green spade would
+1. **Favicon / visual identity.** Reusing the classroom's green spade would
    blur two products that are deliberately being separated.
-3. **Repo licence.** `pbn-to-pdf` and `dealer3` are Unlicense. This repo has no
+2. **Repo licence.** `pbn-to-pdf` and `dealer3` are Unlicense. This repo has no
    `LICENSE` yet.
-4. **Does the launcher describe the services too?** `solver.`, `ben.`, `dealer.`
+3. **Does the launcher describe the services too?** `solver.`, `ben.`, `dealer.`
    and `tables.` are real public HTTP APIs with no documentation page anywhere.
    A "Services" section would be genuinely useful — but it is scope beyond the
    four browser tools, so decide before it creeps in.
-5. **`www` or bare apex** as canonical, and a redirect from the other.
+4. **`www` or bare apex** as canonical, and a redirect from the other.
 
 ---
 
@@ -248,7 +268,7 @@ bridge-classroom.com/.org hub** (shipped 2026-08-31, PR #411). It must not
 - [ ] The bridge-classroom hub tile points at the new host and is not dead
 - [ ] `bridge-craftwork.github.io/pdf-handouts/` still resolves
 - [ ] bridge-solver's `/api/stats` works on the new host
-- [ ] The four backend service hosts are untouched and still answering
+- [ ] `solver.` and `dealer.` still answer — untouched, and NOT repurposed
 
 ---
 
