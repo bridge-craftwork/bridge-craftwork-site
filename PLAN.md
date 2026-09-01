@@ -259,14 +259,54 @@ so check the wasm actually loads rather than assuming.
 **`pbn-to-pdf.bridge-classroom.org` is live AND linked from the
 bridge-classroom hub** (shipped 2026-08-31, PR #411). It must not 404.
 
-- **Minimum, zero risk:** leave the custom domain attached; Pages serves the
-  same site from both hosts. Nothing breaks, it's just no longer canonical.
-- **Better:** a Cloudflare **Redirect Rule** on the `bridge-classroom.org` zone
-  — `pbn-to-pdf.bridge-classroom.org/*` →
-  `https://bridge-craftwork.com/pbn-to-pdf/$1`, 301 — once the new path is
-  confirmed working. This is also what closes the reputation-isolation gap.
-  (Pages `_redirects` is the wrong tool: it's path-based; cross-host belongs in
-  a zone rule.)
+**State on 2026-09-01: the zero-risk half is already in effect.** The custom
+domain is still attached, so Pages serves the identical build from both hosts —
+verified byte-for-byte, same asset hash. Nothing is broken; the old host is
+simply no longer canonical.
+
+### The rule to create *(blocked on credentials, not on work)*
+
+The redirect itself needs a Cloudflare **Redirect Rule** on the
+`bridge-classroom.org` zone (`be8ddf0429fa87a0da30d1c9def31a28`). Neither the
+CI token nor the local `wrangler` OAuth session can write zone rulesets — both
+have zone **read** only, and the rulesets API answers `10000 Authentication
+error`. So this is a dashboard action, or an API token with **Zone → Config
+Rules → Edit** on that zone.
+
+Rules → Redirect Rules → Create rule:
+
+| Field | Value |
+| --- | --- |
+| If | `http.host eq "pbn-to-pdf.bridge-classroom.org"` |
+| Then | Dynamic redirect |
+| Target URL | `concat("https://bridge-craftwork.com/pbn-to-pdf", http.request.uri.path)` |
+| Preserve query string | on |
+| Status | 301 |
+
+`concat` rather than a static target so the path survives: `/` becomes
+`/pbn-to-pdf/`, and `/assets/x.js` becomes `/pbn-to-pdf/assets/x.js`.
+
+**Keep the Pages custom domain attached.** It is what provides the DNS record
+and the certificate for that hostname — detaching it would take the name away
+entirely, and the redirect with it. The rule runs at the zone edge, before
+Pages, so the two do not fight.
+
+**No loop.** `bridge-craftwork.com/pbn-to-pdf/` proxies `pbn-to-pdf.pages.dev`,
+a different host, so a rule scoped to the classroom hostname never fires for it.
+
+Then verify: `curl -sI https://pbn-to-pdf.bridge-classroom.org/` → 301 to
+`https://bridge-craftwork.com/pbn-to-pdf/`, and a deep path keeps its suffix.
+
+### The alternative, and why it was not taken
+
+A Pages Function (`functions/_middleware.js` in `pbn-to-pdf`) *could* do this in
+code — unlike `_redirects`, a Function can read the Host header, so the
+host-blindness objection does not apply to it. It was rejected on cost: root
+middleware runs for **every** request to that project, including every asset
+request proxied through `bridge-craftwork.com/pbn-to-pdf/`. That puts a Function
+invocation on the hot path of a project that currently has none, to serve a
+redirect for the one host that is being retired.
+
 
 ---
 
@@ -363,6 +403,10 @@ it creep.
 - [x] `solver.` and `dealer.` still answer — untouched, and NOT repurposed
       *(both 422 on an empty body in <110ms, 2026-09-01)*
 - [ ] The bridge-classroom hub tile points somewhere live
+      *(still `pbn-to-pdf.bridge-classroom.org`, in `docs/index.html`. Live
+      either way — 200 now, 301 once the rule exists — but it is the last
+      thing depending on the old host, so Phase 6 should repoint it. That repo
+      had uncommitted work in flight on 2026-09-01, so it was left alone.)*
 
 ---
 
