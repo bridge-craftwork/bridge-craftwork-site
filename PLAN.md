@@ -219,7 +219,24 @@ the proxy — a Function that works on `pages.dev` can still break behind it.
 
 ---
 
-## Phase 3 — Move pdf-handouts off GitHub Pages
+## Phase 3 — Move pdf-handouts off GitHub Pages ✅ *done 2026-09-01*
+
+Landed as three separate merges, in this order, because doing it in one would
+have made the tool unreachable: a stub at the GitHub Pages address redirects to
+`/pdf-handouts/`, which until step 2 proxied that same address.
+
+1. `pdf-handouts.pages.dev` made real, GitHub Pages still serving the site
+2. the Worker repointed at it — verified byte-identical before going on
+3. GitHub Pages swapped to the stub
+
+Two things bit on the way, both worth remembering. `CLOUDFLARE_ACCOUNT_ID` was
+53 characters rather than 32 — Cloudflare reports that, a missing permission and
+a wrong account identically, as `code: 7003`, so the workflow now runs `whoami`
+and a shape check to tell them apart. And `jetli/wasm-pack-action` with
+`version: latest` **fails open**: when its GitHub API lookup fails it silently
+installs wasm-pack v0.9.1, whose `wasm-opt` cannot parse modern wasm. Pinned
+now. **The other three tool repos still use the unpinned action.**
+
 
 The only tool on a different hosting product, and the smallest migration: no
 Vite, no bundler — `pages.yml` runs `wasm-pack` and uploads `web/` directly.
