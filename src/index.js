@@ -158,19 +158,6 @@ const TOOL_ORIGINS = {
   '/pdf-handouts': 'https://pdf-handouts.pages.dev',
 }
 
-// Paths a mounted tool requests from the SITE ROOT rather than from its own
-// mount, because the tool built them absolute. Under a path mount these land on
-// the apex and 404 — silently, since the tool keeps working and only the
-// feature behind them stops.
-//
-// bridge-solver's telemetry beacon is the one case: `web/src/lib/telemetry.js`
-// has `const ENDPOINT = '/t'`. The durable fix is a relative `./t` in that
-// repo; until then this keeps the mounted tool whole, and routing is what this
-// repo is for. Anything added here is a workaround, not a pattern to grow.
-const TOOL_ROOT_PATHS = {
-  '/t': '/bridge-solver',
-}
-
 /** Exact segment match, so `/dealer3-notes` never routes to `/dealer3`. */
 function matchTool(pathname) {
   for (const prefix of Object.keys(TOOL_ORIGINS)) {
@@ -179,21 +166,18 @@ function matchTool(pathname) {
   return null
 }
 
-async function proxyTool(request, url, prefix, innerPath) {
+async function proxyTool(request, url, prefix) {
   const base = TOOL_ORIGINS[prefix]
 
-  if (innerPath === undefined) {
-    // `/tool` -> `/tool/`. Every tool builds with relative asset URLs, so
-    // without the trailing slash they resolve against the wrong base and the
-    // page loads with nothing in it. First thing to break if it is missed.
-    if (url.pathname === prefix) {
-      url.pathname = prefix + '/'
-      return Response.redirect(url.toString(), 301)
-    }
-    innerPath = url.pathname.slice(prefix.length)
+  // `/tool` -> `/tool/`. Every tool builds with relative asset URLs, so without
+  // the trailing slash they resolve against the wrong base and the page loads
+  // with nothing in it. First thing to break if it is missed.
+  if (url.pathname === prefix) {
+    url.pathname = prefix + '/'
+    return Response.redirect(url.toString(), 301)
   }
 
-  const target = new URL(base + innerPath)
+  const target = new URL(base + url.pathname.slice(prefix.length))
   target.search = url.search
 
   const upstream = await fetch(new Request(target, request), { redirect: 'manual' })
@@ -247,9 +231,6 @@ export default {
     }
 
     if (url.pathname.startsWith('/download/')) return download(request, url, ctx)
-
-    const rooted = TOOL_ROOT_PATHS[url.pathname]
-    if (rooted) return proxyTool(request, url, rooted, url.pathname)
 
     const tool = matchTool(url.pathname)
     if (tool) return proxyTool(request, url, tool)

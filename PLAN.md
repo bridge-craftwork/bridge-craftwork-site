@@ -357,7 +357,9 @@ it creep.
 - [x] `pbn-to-pdf.bridge-classroom.org` still resolves — 200 or 301, never 404
 - [x] `bridge-craftwork.github.io/pdf-handouts/` still resolves
 - [x] bridge-solver's `/api/stats` works through the proxy
-      *(its `/t` beacon does NOT — absolute path; see TOOL_ROOT_PATHS)*
+      *(its `/t` beacon needed a relative URL in that repo — an absolute `/t`
+      resolved to the apex under the mount and 404'd silently. Fixed there,
+      and the Worker's temporary route for it removed.)*
 - [x] `solver.` and `dealer.` still answer — untouched, and NOT repurposed
       *(both 422 on an empty body in <110ms, 2026-09-01)*
 - [ ] The bridge-classroom hub tile points somewhere live
