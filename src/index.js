@@ -155,13 +155,7 @@ const TOOL_ORIGINS = {
   '/pbn-to-pdf': 'https://pbn-to-pdf.pages.dev',
   '/dealer3': 'https://dealer3.pages.dev',
   '/bridge-solver': 'https://bridge-solver.pages.dev',
-
-  // INTERIM: pdf-handouts is the one tool still on GitHub Pages, and its
-  // `pdf-handouts.pages.dev` does not exist yet — Phase 3 creates it. Its
-  // GitHub Pages site is served under /pdf-handouts/, so that path is part of
-  // the base here and the arithmetic below is unchanged. Phase 3 swaps this
-  // one line for the pages.dev origin.
-  '/pdf-handouts': 'https://bridge-craftwork.github.io/pdf-handouts',
+  '/pdf-handouts': 'https://pdf-handouts.pages.dev',
 }
 
 // Paths a mounted tool requests from the SITE ROOT rather than from its own
