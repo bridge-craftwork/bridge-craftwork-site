@@ -52,6 +52,18 @@
 .tbtn-ghost:hover{border-color:var(--accent)}
 .tile-actions>.tbtn-ghost:only-child{flex:1}
 
+/* The detected platform, and the way out of a wrong guess. Empty until the
+   page confirms one, so a no-JS visitor sees only the "other platforms" link
+   and the button's own fallback to the release page still works. */
+.tile-alt{margin-top:8px;font-size:12px;color:var(--color-text-tertiary);display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.tile-alt a{color:var(--color-text-tertiary);text-decoration:underline;text-underline-offset:2px}
+.tile-alt a:hover{color:var(--color-text-secondary)}
+.dl-plat:not(:empty)::after{content:"\00b7";margin-left:6px}
+
+/* No CLI build exists for phones or tablets, so the button says so rather
+   than handing over a file that cannot run. */
+.tbtn-off{opacity:0.45;pointer-events:none;background:transparent;color:var(--color-text-tertiary);border:1px solid var(--color-border-tertiary)}
+
 .tag{font-size:12px;padding:3px 9px;border-radius:20px;font-weight:500}
 .tag-slate{background:var(--accent-soft);color:var(--accent-strong)}
 .tag-blue{background:#E6F1FB;color:#185FA5}
@@ -124,7 +136,7 @@
 <header class="header">
   <div class="header-logo">
     <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
-      <g fill="none" stroke="var(--accent)">
+      <g fill="none" stroke="var(--accent)" transform="rotate(180 16 16)">
         <path d="M10.9 21.1 21.1 10.9" stroke-width="3.6"/>
         <circle cx="23.5" cy="8.5" r="3.8" stroke-width="2.4"/>
         <path d="M4.93 22.2A3.8 3.8 0 1 1 9.8 27.07" stroke-width="2.4"/>
@@ -143,11 +155,56 @@
   <div class="section-header"><span class="section-label">Tools</span><span class="section-line"></span></div>
   <div class="tiles">
 
-    <!-- PHASE 1: every "Try in browser" points at the tool's CURRENT live URL,
+    <!-- PHASE 1: every "Run in browser" points at the tool's CURRENT live URL,
          so this site is useful before any tool moves. Phase 2 repoints them one
          at a time to the paths in data-phase2 as each is verified working.
          A "Docs" action joins these three in Phase 5, when there are docs to
          link; a button that 404s would be worse than a button that is absent. -->
+
+    <article class="tile">
+      <div class="thumb thumb-solve">
+        <table class="ddt mono">
+          <tr><th></th><th>&#9827;</th><th class="red">&#9830;</th><th class="red">&#9829;</th><th>&#9824;</th><th>NT</th></tr>
+          <tr><th>N</th><td>7</td><td>9</td><td class="hi">11</td><td>6</td><td>8</td></tr>
+          <tr><th>S</th><td>7</td><td>9</td><td class="hi">11</td><td>6</td><td>8</td></tr>
+          <tr><th>E</th><td>6</td><td>4</td><td>2</td><td>7</td><td>4</td></tr>
+          <tr><th>W</th><td>6</td><td>4</td><td>2</td><td>7</td><td>4</td></tr>
+        </table>
+      </div>
+      <div class="tile-body">
+        <div class="tile-name">bridge-solver</div>
+        <div class="tile-desc">Fast double-dummy solver with par scoring, cardplay analysis and PBN processing.</div>
+        <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
+        <div class="tile-actions">
+          <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="bridge-solver" data-phase2="/bridge-solver/" href="https://bridge-solver.pages.dev/">Run in browser</a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" data-dl="bridge-solver" href="https://github.com/bridge-craftwork/bridge-solver/releases/latest">Download CLI</a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/bridge-solver">Source</a>
+        </div>
+        <div class="tile-alt"><span class="dl-plat" data-dl-label></span><a href="https://github.com/bridge-craftwork/bridge-solver/releases/latest" target="_blank" rel="noopener">other platforms</a></div>
+      </div>
+    </article>
+
+    <article class="tile">
+      <div class="thumb thumb-deal mono">
+        <div><span class="dl-cm"># strong NT opener</span></div>
+        <div><span class="dl-kw">condition</span></div>
+        <div>&nbsp;&nbsp;<span class="dl-fn">hcp</span>(north) &gt;= <span class="dl-num">15</span> <span class="dl-kw">and</span></div>
+        <div>&nbsp;&nbsp;<span class="dl-fn">shape</span>(north, <span class="dl-kw">any</span> <span class="dl-num">4333</span>)</div>
+        <div><span class="dl-kw">produce</span> <span class="dl-num">24</span></div>
+        <div><span class="dl-cm">generated 24 in 0.4s</span></div>
+      </div>
+      <div class="tile-body">
+        <div class="tile-name">dealer3</div>
+        <div class="tile-desc">Rust rebuild of the classic <span class="mono">dealer.exe</span> hand generator &#8212; runs its scripts, accepts its command line.</div>
+        <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
+        <div class="tile-actions">
+          <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="dealer3" data-phase2="/dealer3/" href="https://dealer3.pages.dev/">Run in browser</a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" data-dl="dealer3" href="https://github.com/bridge-craftwork/dealer3/releases/latest">Download CLI</a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/dealer3">Source</a>
+        </div>
+        <div class="tile-alt"><span class="dl-plat" data-dl-label></span><a href="https://github.com/bridge-craftwork/dealer3/releases/latest" target="_blank" rel="noopener">other platforms</a></div>
+      </div>
+    </article>
 
     <article class="tile">
       <div class="thumb thumb-pbn">
@@ -171,31 +228,11 @@
         <div class="tile-desc">Turn a PBN file into printable hand diagrams, declarer&#8217;s-plan worksheets and bidding sheets.</div>
         <div class="tile-tags"><span class="tag tag-slate">v0.18.0</span><span class="tag tag-blue">Runs offline</span></div>
         <div class="tile-actions">
-          <a class="tbtn tbtn-try" data-tool="pbn-to-pdf" data-phase2="/pbn-to-pdf/" href="https://pbn-to-pdf.bridge-classroom.org/">Try in browser</a>
-          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/pbn-to-pdf/releases/latest">Download</a>
-          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/pbn-to-pdf">Source</a>
+          <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="pbn-to-pdf" data-phase2="/pbn-to-pdf/" href="https://pbn-to-pdf.bridge-classroom.org/">Run in browser</a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" data-dl="pbn-to-pdf" href="https://github.com/bridge-craftwork/pbn-to-pdf/releases/latest">Download CLI</a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/pbn-to-pdf">Source</a>
         </div>
-      </div>
-    </article>
-
-    <article class="tile">
-      <div class="thumb thumb-deal mono">
-        <div><span class="dl-cm"># strong NT opener</span></div>
-        <div><span class="dl-kw">condition</span></div>
-        <div>&nbsp;&nbsp;<span class="dl-fn">hcp</span>(north) &gt;= <span class="dl-num">15</span> <span class="dl-kw">and</span></div>
-        <div>&nbsp;&nbsp;<span class="dl-fn">shape</span>(north, <span class="dl-kw">any</span> <span class="dl-num">4333</span>)</div>
-        <div><span class="dl-kw">produce</span> <span class="dl-num">24</span></div>
-        <div><span class="dl-cm">generated 24 in 0.4s</span></div>
-      </div>
-      <div class="tile-body">
-        <div class="tile-name">dealer3</div>
-        <div class="tile-desc">Rust rebuild of the classic <span class="mono">dealer.exe</span> hand generator &#8212; runs its scripts, accepts its command line.</div>
-        <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
-        <div class="tile-actions">
-          <a class="tbtn tbtn-try" data-tool="dealer3" data-phase2="/dealer3/" href="https://dealer3.pages.dev/">Try in browser</a>
-          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/dealer3/releases/latest">Download</a>
-          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/dealer3">Source</a>
-        </div>
+        <div class="tile-alt"><span class="dl-plat" data-dl-label></span><a href="https://github.com/bridge-craftwork/pbn-to-pdf/releases/latest" target="_blank" rel="noopener">other platforms</a></div>
       </div>
     </article>
 
@@ -216,32 +253,11 @@
         <div class="tile-desc">Merge PDFs and screenshots into a handout with custom headers and footers.</div>
         <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
         <div class="tile-actions">
-          <a class="tbtn tbtn-try" data-tool="pdf-handouts" data-phase2="/pdf-handouts/" href="https://bridge-craftwork.github.io/pdf-handouts/">Try in browser</a>
-          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/pdf-handouts/releases/latest">Download</a>
-          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/pdf-handouts">Source</a>
+          <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="pdf-handouts" data-phase2="/pdf-handouts/" href="https://bridge-craftwork.github.io/pdf-handouts/">Run in browser</a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" data-dl="pdf-handouts" href="https://github.com/bridge-craftwork/pdf-handouts/releases/latest">Download CLI</a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/pdf-handouts">Source</a>
         </div>
-      </div>
-    </article>
-
-    <article class="tile">
-      <div class="thumb thumb-solve">
-        <table class="ddt mono">
-          <tr><th></th><th>&#9827;</th><th class="red">&#9830;</th><th class="red">&#9829;</th><th>&#9824;</th><th>NT</th></tr>
-          <tr><th>N</th><td>7</td><td>9</td><td class="hi">11</td><td>6</td><td>8</td></tr>
-          <tr><th>S</th><td>7</td><td>9</td><td class="hi">11</td><td>6</td><td>8</td></tr>
-          <tr><th>E</th><td>6</td><td>4</td><td>2</td><td>7</td><td>4</td></tr>
-          <tr><th>W</th><td>6</td><td>4</td><td>2</td><td>7</td><td>4</td></tr>
-        </table>
-      </div>
-      <div class="tile-body">
-        <div class="tile-name">bridge-solver</div>
-        <div class="tile-desc">Fast double-dummy solver with par scoring, cardplay analysis and PBN processing.</div>
-        <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
-        <div class="tile-actions">
-          <a class="tbtn tbtn-try" data-tool="bridge-solver" data-phase2="/bridge-solver/" href="https://bridge-solver.pages.dev/">Try in browser</a>
-          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/bridge-solver/releases/latest">Download</a>
-          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/bridge-solver">Source</a>
-        </div>
+        <div class="tile-alt"><span class="dl-plat" data-dl-label></span><a href="https://github.com/bridge-craftwork/pdf-handouts/releases/latest" target="_blank" rel="noopener">other platforms</a></div>
       </div>
     </article>
 
@@ -264,7 +280,7 @@
         <div class="tile-desc">Deterministic rule-based cardplay bot with teachable reason codes &#8212; it says <em>why</em> it played the card.</div>
         <div class="tile-tags"><span class="tag tag-gray">No web UI</span><span class="tag tag-amber">No release yet</span></div>
         <div class="tile-actions">
-          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/bridge-rulebot">Source</a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/bridge-rulebot">Source</a>
         </div>
       </div>
     </article>
@@ -288,6 +304,75 @@
 </footer>
 
 </div>
+
+<script>
+/* Point each "Download CLI" at the build for this machine, so the button
+   downloads a file instead of opening a release page to read asset names.
+   The Worker resolves `latest` at request time and 302s to the asset, so
+   nothing here pins a version.
+
+   Progressive enhancement: with no JavaScript the links stay pointed at the
+   release page, which always works. */
+(function () {
+  var LABELS = {
+    'macos-aarch64':  'macOS, Apple Silicon',
+    'macos-x86_64':   'macOS, Intel',
+    'windows-x86_64': 'Windows',
+    'linux-x86_64':   'Linux'
+  }
+
+  var ua = navigator.userAgent
+  var links = document.querySelectorAll('a[data-dl]')
+
+  /* An iPad in desktop mode reports "Macintosh" and is indistinguishable from
+     a Mac by user-agent alone; a touch-capable Mac does not exist, so
+     maxTouchPoints settles it. */
+  var mobile = /iPhone|iPod|iPad|Android/i.test(ua) ||
+               (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ||
+               (navigator.userAgentData && navigator.userAgentData.mobile === true)
+
+  if (mobile) {
+    links.forEach(function (a) {
+      a.classList.add('tbtn-off')
+      a.setAttribute('aria-disabled', 'true')
+      a.removeAttribute('href')
+      a.title = 'The command-line build runs on macOS, Windows and Linux'
+    })
+    document.querySelectorAll('[data-dl-label]').forEach(function (el) {
+      el.textContent = 'Desktop only'
+    })
+    return
+  }
+
+  var os = /Mac/i.test(ua) ? 'macos'
+         : /Win/i.test(ua) ? 'windows'
+         : /Linux|CrOS/i.test(ua) ? 'linux' : null
+  if (!os) return
+
+  function apply(platform) {
+    links.forEach(function (a) {
+      a.href = '/download/' + a.getAttribute('data-dl') + '?platform=' + platform
+      a.removeAttribute('target')
+      a.removeAttribute('rel')
+      a.title = 'Download the ' + LABELS[platform] + ' build'
+    })
+    document.querySelectorAll('[data-dl-label]').forEach(function (el) {
+      el.textContent = LABELS[platform]
+    })
+  }
+
+  /* Mac architecture is not in the user-agent at all — Safari reports
+     "MacIntel" on Apple Silicon too. Chromium can tell us; everywhere else
+     defaults to Apple Silicon, with "other platforms" as the way back. */
+  if (os === 'macos' && navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+    navigator.userAgentData.getHighEntropyValues(['architecture']).then(function (h) {
+      apply(h.architecture === 'x86' ? 'macos-x86_64' : 'macos-aarch64')
+    }).catch(function () { apply('macos-aarch64') })
+  } else {
+    apply(os === 'macos' ? 'macos-aarch64' : os + '-x86_64')
+  }
+})()
+</script>
 
 </body>
 </html>

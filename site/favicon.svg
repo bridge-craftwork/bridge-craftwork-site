@@ -1,13 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- A combination wrench: box end top-right, open jaw bottom-left.
+  <!-- A combination wrench: open jaw top-right, box end bottom-left.
        Deliberately not the classroom's green spade — these are two
        products being kept apart. Placeholder by intent; replaceable
        without touching anything else.
 
        The shaft stops at each head's wall rather than its centre, so
        its flat ends stay buried in the walls instead of poking into the
-       box end's hole. -->
-  <g fill="none" stroke="#475569">
+       box end's hole.
+
+       Rotated 180 degrees: jaw up, box end down. The other way round it
+       read as a stick figure. -->
+  <g fill="none" stroke="#475569" transform="rotate(180 16 16)">
     <path d="M10.9 21.1 21.1 10.9" stroke-width="3.6"/>
     <circle cx="23.5" cy="8.5" r="3.8" stroke-width="2.4"/>
     <path d="M4.93 22.2A3.8 3.8 0 1 1 9.8 27.07" stroke-width="2.4"/>

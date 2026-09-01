@@ -25,7 +25,12 @@ decisions already locked, and the phase order. The work has not started.
   missing trailing slash resolves them against the wrong base.
 - **Copy design tokens, don't fetch them.** `styles.css` is copied from
   Bridge-Classroom, not linked cross-domain.
-- **Download links point at `/releases/latest`**, never a pinned tag.
+- **Download links resolve `latest` at request time**, never a pinned tag. The
+  Worker's `/download/<tool>` looks up the newest release, picks the asset for
+  the visitor's platform and redirects to it — so the button downloads a file
+  instead of opening a release page, and still never goes stale. There is no
+  CLI build for phones, so the page disables the button there rather than
+  offering something that cannot run.
 
 ## Two different things share this domain
 

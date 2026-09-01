@@ -307,6 +307,11 @@ it creep.
    Revisit only alongside a capacity plan — never on the grounds that the docs
    would be useful, because that was never the part in doubt.
 
+4. **The bare apex is canonical**; `www` 301s to it, in the Worker rather than
+   a zone Redirect Rule — both hostnames are custom domains on this Worker, so
+   one hostname policy lives in one diff. It matches the `<link rel="canonical">`
+   the page already declared.
+
 3. **Favicon — a wrench**, at `site/favicon.svg`. Deliberately not the
    classroom's green spade, which would blur two products that are being
    separated on purpose. **Placeholder by intent**: it exists so the site never
@@ -317,9 +322,7 @@ it creep.
 
 ## Open questions
 
-1. **`www` or bare apex** as canonical, with a redirect from the other.
-   Phase 1 attaches both; this only decides which one redirects.
-2. **Visual identity beyond the favicon.** Wanted eventually, blocking nothing.
+1. **Visual identity beyond the favicon.** Wanted eventually, blocking nothing.
 
 ---
 
