@@ -41,6 +41,11 @@ under the apex. They do **not** pass through Caddy and do not touch the droplet.
 subdomain. That is what keeps a static page from sitting next to a live API with
 nothing but the name to tell them apart.
 
+The services are **deliberately undocumented** — publicly reachable but
+unadvertised, and not sized for the attention a documentation page would bring
+(one droplet, one shared proxy). The docs in Phase 5 cover the four browser
+tools only. Don't help by writing up an API here.
+
 ⚠️ `solver.` and `dealer.` are **live services** — both verified answering on
 2026-08-31, and both hardcoded as production defaults in the Bridge-Classroom
 frontend (`ddsClient.js`, `dealerClient.js`). Do not repurpose them. A 404 at
@@ -53,6 +58,10 @@ before concluding a host is free.
 student-facing traffic. Keeping tools and API endpoints off it is deliberate —
 reputation isolation, not just branding. Don't undo it by parking something
 here on a bridge-classroom host because it was convenient.
+
+## Licence
+
+Unlicense (public domain), matching `pbn-to-pdf` and `dealer3`.
 
 ## Git
 

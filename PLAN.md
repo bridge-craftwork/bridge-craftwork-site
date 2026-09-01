@@ -123,7 +123,8 @@ All new. No existing URL changes, so this can land and sit while the rest waits.
    - `site/index.html` — launcher
    - `site/styles.css` — **copy** Bridge-Classroom's `docs/styles.css` (design
      tokens); don't fetch cross-domain
-   - `site/favicon.svg` — needs its own mark (see open questions)
+   - `site/favicon.svg` — **done**: a steel wrench, deliberately not the
+     classroom's green spade. A placeholder by intent (see below).
 2. **The apex is a Worker with Static Assets, not a Pages project.** It has to
    serve the site *and* route tool paths, which a Pages project can't do.
    Bridge-Classroom already uses this product (`wrangler.jsonc`,
@@ -273,13 +274,35 @@ it creep.
 
 ---
 
+## Decided
+
+1. **Repo licence — Unlicense**, matching `pbn-to-pdf` and `dealer3`. `LICENSE`
+   is in the repo.
+
+2. **The services are NOT documented here.** Answers the Phase 5 question, and
+   the answer is no — not "not yet, pending scope", but no on capacity grounds.
+   `solver.`, `ben.`, `dealer.` and `tables.` are publicly reachable but
+   deliberately **unadvertised**, and they will not scale well to worldwide
+   attention: they are one DigitalOcean droplet behind a shared Caddy proxy.
+   Documenting a public HTTP API is advertising it. Phase 5 covers the four
+   browser tools only.
+
+   Revisit only alongside a capacity plan — never on the grounds that the docs
+   would be useful, because that was never the part in doubt.
+
+3. **Favicon — a wrench**, at `site/favicon.svg`. Deliberately not the
+   classroom's green spade, which would blur two products that are being
+   separated on purpose. **Placeholder by intent**: it exists so the site never
+   waits on a visual identity, and it is one self-contained file to replace when
+   something more developed turns up. Don't treat it as a brand decision.
+
+---
+
 ## Open questions
 
-1. **Favicon / visual identity.** Reusing the classroom's green spade would blur
-   two products that are deliberately being separated.
-2. **Repo licence.** `pbn-to-pdf` and `dealer3` are Unlicense; this repo has none.
-3. **Do the services get documented here?** (Phase 5.)
-4. **`www` or bare apex** as canonical, with a redirect from the other.
+1. **`www` or bare apex** as canonical, with a redirect from the other.
+   Phase 1 attaches both; this only decides which one redirects.
+2. **Visual identity beyond the favicon.** Wanted eventually, blocking nothing.
 
 ---
 
