@@ -21,15 +21,29 @@
 
 const APEX = 'bridge-craftwork.com'
 
-// Tool path segment -> the prefix its release assets share. The prefix is what
-// separates a tool's binary from the other things in the same release:
-// bridge-solver ships `solver-diag-*` alongside `bridge-solver-*`, and matching
-// on the platform alone would hand someone the diagnostic tool by mistake.
-const BINARY_PREFIX = {
-  'bridge-solver': 'bridge-solver-',
-  dealer3: 'dealer-',
-  'pbn-to-pdf': 'pbn-to-pdf-',
-  'pdf-handouts': 'pdf-handouts-',
+// How each tool's release assets are named. Three of the four name theirs
+// with nothing but the platform, so the URL can be CONSTRUCTED and handed to
+// GitHub's own `releases/latest/download/<name>` redirect — no API call, so
+// nothing to rate limit, and `latest` is still resolved by GitHub rather than
+// pinned here.
+//
+// The prefix also matters for the one tool that needs the API: bridge-solver
+// ships `solver-diag-*` in the same release, and matching on the platform
+// alone would hand someone the diagnostic binary instead of the solver.
+//
+// An archive rather than the bare binary throughout — a bare executable
+// downloads as an untrusted file and will not run without extra steps.
+const TOOLS = {
+  'bridge-solver': { prefix: 'bridge-solver-', ext: (p) => (p.startsWith('windows') ? '.zip' : '.tar.gz') },
+  dealer3: { prefix: 'dealer-', ext: (p) => (p.startsWith('windows') ? '.exe.zip' : '.tar.gz') },
+  'pbn-to-pdf': { prefix: 'pbn-to-pdf-', ext: (p) => (p.startsWith('windows') ? '.zip' : '.tar.gz') },
+
+  // pdf-handouts embeds the release version in its asset names
+  // (`pdf-handouts-1.0.0-macos-aarch64.zip`), so the name cannot be built from
+  // the platform alone and this one has to ask the API. If that repo ever drops
+  // the version from its asset names, give it an `ext` like the others and the
+  // API path below can go entirely.
+  'pdf-handouts': { prefix: 'pdf-handouts-', ext: null },
 }
 
 // The platform triples every one of the four repos builds. Asset names embed
@@ -76,9 +90,13 @@ function platformFromHeaders(request) {
 }
 
 /**
- * The latest release, cached for an hour. Resolving `latest` per request is
- * what keeps every download link current without pinning a tag anywhere —
- * the rule in CLAUDE.md — while still landing on an actual file.
+ * The latest release, cached for an hour. Only pdf-handouts needs this.
+ *
+ * Unauthenticated GitHub API calls are rate limited per IP, and a Worker's
+ * subrequests leave from Cloudflare addresses shared with everyone else's —
+ * so this WILL be refused some of the time. That is survivable for one tool
+ * behind an hour of cache, with the release page as the fallback, but it is
+ * exactly why the other three construct their URLs instead.
  */
 async function latestRelease(repo, ctx) {
   const url = `https://api.github.com/repos/bridge-craftwork/${repo}/releases/latest`
@@ -126,8 +144,8 @@ function pickAsset(assets, prefix, platform) {
  */
 async function download(request, url, ctx) {
   const tool = url.pathname.slice('/download/'.length).replace(/\/+$/, '')
-  const prefix = BINARY_PREFIX[tool]
-  if (!prefix) return Response.redirect('https://github.com/bridge-craftwork', 302)
+  const spec = TOOLS[tool]
+  if (!spec) return Response.redirect('https://github.com/bridge-craftwork', 302)
 
   const releasePage = `https://github.com/bridge-craftwork/${tool}/releases/latest`
 
@@ -135,8 +153,14 @@ async function download(request, url, ctx) {
   if (!PLATFORMS.has(platform)) platform = platformFromHeaders(request)
   if (!platform) return Response.redirect(releasePage, 302)
 
+  // The common path: build the asset name and let GitHub resolve `latest`.
+  if (spec.ext) {
+    const name = spec.prefix + platform + spec.ext(platform)
+    return Response.redirect(`${releasePage}/download/${name}`, 302)
+  }
+
   const release = await latestRelease(tool, ctx)
-  const asset = release && pickAsset(release.assets || [], prefix, platform)
+  const asset = release && pickAsset(release.assets || [], spec.prefix, platform)
   return Response.redirect(asset ? asset.browser_download_url : releasePage, 302)
 }
 

@@ -50,6 +50,14 @@
   // assets itself once the router needs to choose.
   "assets": {
     "directory": "./site",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+
+    // Without this, Cloudflare matches a static asset BEFORE invoking the
+    // Worker — so `/` is served straight from index.html and the Worker never
+    // runs. That made the www -> apex redirect unreachable on every path that
+    // happened to be a real file, which is most of them. Running the Worker
+    // first puts one hostname policy in front of everything; it hands requests
+    // back to ASSETS itself.
+    "run_worker_first": true
   }
 }
