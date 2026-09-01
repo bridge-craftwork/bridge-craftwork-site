@@ -293,57 +293,39 @@ broken; the old hosts are simply no longer canonical.
   temporary: it is already on paper in people's hands, and a reprint is not a
   redeploy.
 
-### The rule to create *(blocked on credentials, not on work)*
+### Superseded: detached, not redirected *(2026-09-01)*
 
-The redirect itself needs a Cloudflare **Redirect Rule** on the
-`bridge-classroom.org` zone (`be8ddf0429fa87a0da30d1c9def31a28`). Neither the
-CI token nor the local `wrangler` OAuth session can write zone rulesets — both
-have zone **read** only, and the rulesets API answers `10000 Authentication
-error`. So this is a dashboard action, or an API token with **Zone → Config
-Rules → Edit** on that zone.
+The redirect rules were never created, and are not needed. **Nobody but the
+author has used these tools** — they are close to brand new and were never
+announced — so there are no bookmarks to protect and no reason to keep serving
+anything on `bridge-classroom.org`. Detaching is strictly better than
+redirecting: it closes the reputation gap completely rather than leaving traffic
+terminating on the classroom domain, and it removes the `dealer.`/`solver.`
+label collision with the live droplet APIs outright.
 
-Rules → Redirect Rules → Create rule:
+Done in this order, so nothing pointed at a host as it went away:
 
-One rule, three hosts — a single expression handles all of them:
+1. `dealer3`'s print footer stopped hard-coding its URL — it now derives it from
+   `window.location`, because the same build serves from `pages.dev` and from
+   `/dealer3/` and that URL ends up **on paper**. (Dealer3 #50)
+2. The hub's three tiles and the ingest page's solver link were repointed to the
+   new paths. (Bridge-Classroom #412)
+3. All three custom domains detached from their Pages projects.
 
-| Field | Value |
-| --- | --- |
-| If | `http.host in {"pbn-to-pdf.bridge-classroom.org" "dealer.bridge-classroom.org" "solver.bridge-classroom.org"}` |
-| Then | Dynamic redirect |
-| Target URL | see the expression below |
-| Preserve query string | on |
-| Status | 301 |
+**Left to do: delete three DNS records.** Detaching removed the Pages binding
+but not the records, so the hostnames still resolve and now answer **522** — a
+Cloudflare error page with no origin behind it, which is worse than not
+existing. Delete on the `bridge-classroom.org` zone:
 
-```
-concat(
-  "https://bridge-craftwork.com",
-  lookup_json_string(
-    "{\"pbn-to-pdf.bridge-classroom.org\":\"/pbn-to-pdf\",
-      \"dealer.bridge-classroom.org\":\"/dealer3\",
-      \"solver.bridge-classroom.org\":\"/bridge-solver\"}",
-    http.host
-  ),
-  http.request.uri.path
-)
-```
+    pbn-to-pdf.bridge-classroom.org
+    dealer.bridge-classroom.org
+    solver.bridge-classroom.org
 
-If `lookup_json_string` is awkward in the dashboard, three separate rules with
-`http.host eq "..."` and a plain `concat("https://bridge-craftwork.com/<path>",
-http.request.uri.path)` are equivalent and easier to read.
-
-`concat` rather than a static target so the path survives: `/` becomes
-`/pbn-to-pdf/`, and `/assets/x.js` becomes `/pbn-to-pdf/assets/x.js`.
-
-**Keep the Pages custom domain attached.** It is what provides the DNS record
-and the certificate for that hostname — detaching it would take the name away
-entirely, and the redirect with it. The rule runs at the zone edge, before
-Pages, so the two do not fight.
-
-**No loop.** `bridge-craftwork.com/pbn-to-pdf/` proxies `pbn-to-pdf.pages.dev`,
-a different host, so a rule scoped to the classroom hostname never fires for it.
-
-Then verify: `curl -sI https://pbn-to-pdf.bridge-classroom.org/` → 301 to
-`https://bridge-craftwork.com/pbn-to-pdf/`, and a deep path keeps its suffix.
+Dashboard only. Nothing available can do it: the CI token is scoped to the
+`bridge-craftwork.com` zone, and the local `wrangler` OAuth session cannot even
+*read* this zone's DNS records — `dns_records` answers `10000`, as the rulesets
+API did. Verify with `dig +short <host>` returning nothing, as a name that never
+existed does.
 
 ### The alternative, and why it was not taken
 
