@@ -167,7 +167,8 @@ All new. No existing URL changes, so this can land and sit while the rest waits.
    its eventual path, so Phase 2 is a mechanical edit rather than a re-reading
    of this plan.
 
-   **Three actions, not four, until Phase 5.** `Docs` is in the decision table
+   **Three actions, not four, until Phase 5** (which also unblocks the
+   fourth action). `Docs` is in the decision table
    above and belongs there, but there are no docs yet and a button that 404s is
    worse than one that is absent. The action row already wraps to a second line,
    so adding it later costs no layout work.
@@ -340,7 +341,7 @@ redirect for the one host that is being retired.
 
 ---
 
-## Phase 5 — Documentation
+## Phase 5 — Documentation, for people *and* for assistants
 
 The reason this is a site and not just a launcher. Four CLIs with real releases
 and no documentation between them; each repo's README is the only reference.
@@ -351,11 +352,50 @@ the CLI. Source the first draft from each repo's README rather than writing
 fresh — `pbn-to-pdf`'s in particular already has a full options table and worked
 examples.
 
-Open: whether the **services** get documented here too. `solver.`, `ben.`,
-`dealer.` and `tables.` are real public HTTP APIs with no public documentation
-anywhere. Genuinely useful, and this is the only sensible home — but it is
-scope beyond the four browser tools, so decide deliberately rather than letting
-it creep.
+### The machine-readable half — issue #3
+
+Phase 5 grew a second audience. Issue #2 found that dealer3's language reference
+is **invisible to any assistant that does not run JavaScript**: `/dealer3/reference`
+is 841 bytes, 28 characters of visible text, with the real ~25,000-character
+reference existing only after hydration — while the 347-file `.dlr` corpus is
+fully fetchable from `raw.githubusercontent.com`. That is the worst possible
+split: a model pattern-matches hundreds of examples with no grammar and invents
+syntax around the edges.
+
+Issue #3 generalises that to all four tools, because **every tool here is a
+document transform** and the same surface serves all of them. The contract is
+stated in #3; the parts that land in THIS repo are:
+
+- `/llms.txt` — the index, covering all four tools, linking to each tool's
+  `reference.txt` and to the docs below. Tool-general from the start: it lives
+  at the apex and is written once.
+- `/robots.txt` with content signals. **One file governs all four tools**,
+  because they are on paths — under the rejected subdomain scheme this would
+  have been four files. Note Cloudflare already injects a *managed* Content
+  Signals robots.txt at the zone level, so replacing it needs verifying after
+  deploy.
+- `/sitemap.xml`.
+- Serving the house-style guide derived from the scenario corpus.
+
+Each tool's own `reference.txt`, JS API, diagnostics and real 404s belong in
+that tool's repo, per the rule at the top of CLAUDE.md.
+
+**These should be built together with the human docs, not before them** — the
+index wants something to index. The docs here are static HTML with no hydration,
+so unlike dealer3's reference they are agent-readable by construction.
+
+### Blocked on
+
+`Practice-Bidding-Scenarios` has no LICENSE (its issue #300). Its README states
+an intent not to claim copyright, but that is not a grant. `llms.txt` should not
+point assistants at that corpus until it carries one.
+
+### Settled
+
+The **services are not documented here** — see "Decided" above. That answers the
+question this phase used to leave open. It also means `llms.txt` describes the
+four browser tools only, and says nothing about `solver.`, `ben.`, `dealer.` or
+`tables.`.
 
 ---
 
