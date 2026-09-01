@@ -137,12 +137,29 @@ All new. No existing URL changes, so this can land and sit while the rest waits.
      "assets": { "directory": "./site", "binding": "ASSETS" }
    }
    ```
-3. **`.github/workflows/deploy.yml`** — `wrangler deploy` via
-   `cloudflare/wrangler-action`. Needs `CLOUDFLARE_API_TOKEN` and
+3. **`.github/workflows/deploy.yml`** — `npx wrangler deploy` against a
+   pinned `wrangler` devDependency. Needs `CLOUDFLARE_API_TOKEN` and
    `CLOUDFLARE_ACCOUNT_ID`. Account: `13691335358be0d5da6e79540083d975`
    (documented as non-credential in `bridge-solver/wrangler.jsonc`).
+
+   **Not `cloudflare/wrangler-action`**, which this plan originally specified.
+   Left unpinned it falls back to wrangler 3.90.0, which predates Workers
+   Static Assets — Bridge-Classroom hit exactly that and moved to `npx
+   wrangler`. Pinning the action's `wranglerVersion` would also work; matching
+   the sibling repo is worth more than the action's convenience.
+
+   The workflow **self-gates** on the secret's presence (`if: env.CF_API_TOKEN
+   != ''`), so it can merge and sit harmlessly before Cloudflare is set up.
 4. **Tiles point at the tools' CURRENT URLs.** Deliberate: the site is live and
-   useful before any tool moves, and Phase 2 repoints one tile at a time.
+   useful before any tool moves, and Phase 2 repoints one tile at a time. Each
+   `Try in browser` link carries `data-tool` and `data-phase2` attributes naming
+   its eventual path, so Phase 2 is a mechanical edit rather than a re-reading
+   of this plan.
+
+   **Three actions, not four, until Phase 5.** `Docs` is in the decision table
+   above and belongs there, but there are no docs yet and a button that 404s is
+   worse than one that is absent. The action row already wraps to a second line,
+   so adding it later costs no layout work.
 5. **Attach `bridge-craftwork.com` + `www`** as custom domains. Cloudflare's
    CNAME flattening handles the apex.
 

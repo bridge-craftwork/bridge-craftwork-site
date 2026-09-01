@@ -1,0 +1,33 @@
+// Cloudflare Worker config for the Worker that serves bridge-craftwork.com.
+//
+// A Worker with Static Assets rather than a Pages project, because the apex has
+// to do two things a Pages project cannot do together: serve this repo's site
+// AND route each tool's path to that tool's own Pages project. See PLAN.md.
+//
+// DEPLOY: by `.github/workflows/deploy.yml`, which runs `npx wrangler deploy`
+// against the pinned devDependency. Deliberately NOT cloudflare/wrangler-action:
+// unpinned it falls back to wrangler 3.90.0, which predates Workers Static
+// Assets. Keep any Cloudflare dashboard Git auto-build DISABLED so this stays
+// the only deploy path.
+//
+// Manual fallback (needs an authed CLI): `npx wrangler deploy`.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bridge-craftwork-site",
+  "compatibility_date": "2026-08-31",
+
+  // Present from Phase 1 even though the Worker only passes through to ASSETS
+  // today: Phase 2's tool-path router lands in this same entry point, so the
+  // wiring is here rather than being a hosting change disguised as a feature.
+  "main": "src/index.js",
+
+  "observability": { "enabled": true },
+
+  // Static assets are matched FIRST; anything with no matching asset falls
+  // through to the Worker above. The binding is what lets the Worker serve
+  // assets itself once the router needs to choose.
+  "assets": {
+    "directory": "./site",
+    "binding": "ASSETS"
+  }
+}
