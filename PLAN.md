@@ -330,14 +330,17 @@ it creep.
 
 - [x] `curl -sI https://bridge-craftwork.com` → 200 *(live 2026-09-01)*
 - [x] `www` 301s to the bare apex, path and query preserved
-- [ ] Each `/<tool>/` loads **and produces a real output file** — not just renders
-- [ ] `/<tool>` (no trailing slash) redirects to `/<tool>/`
-- [ ] dealer3 still reports cross-origin isolation (`crossOriginIsolated === true`)
+- [x] Each `/<tool>/` loads **and produces a real output file** — not just renders
+      *(2026-09-01: dealer3 generated 20 deals, bridge-solver solved a board,
+      pbn-to-pdf rendered a 154 KB PDF, pdf-handouts loaded its wasm)*
+- [x] `/<tool>` (no trailing slash) redirects to `/<tool>/`
+- [x] dealer3 still reports cross-origin isolation (`crossOriginIsolated === true`)
 - [x] Every Download link resolves to a release with platform assets
       *(all 16 tool x platform combinations followed to a real 200, 2026-09-01)*
 - [x] `pbn-to-pdf.bridge-classroom.org` still resolves — 200 or 301, never 404
 - [x] `bridge-craftwork.github.io/pdf-handouts/` still resolves
-- [ ] bridge-solver's `/api/stats` works through the proxy
+- [x] bridge-solver's `/api/stats` works through the proxy
+      *(its `/t` beacon does NOT — absolute path; see TOOL_ROOT_PATHS)*
 - [x] `solver.` and `dealer.` still answer — untouched, and NOT repurposed
       *(both 422 on an empty body in <110ms, 2026-09-01)*
 - [ ] The bridge-classroom hub tile points somewhere live

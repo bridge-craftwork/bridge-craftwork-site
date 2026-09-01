@@ -159,9 +159,14 @@
   <div class="section-header"><span class="section-label">Tools</span><span class="section-line"></span></div>
   <div class="tiles">
 
-    <!-- PHASE 1: every "Run in browser" points at the tool's CURRENT live URL,
-         so this site is useful before any tool moves. Phase 2 repoints them one
-         at a time to the paths in data-phase2 as each is verified working.
+    <!-- Every "Run in browser" now points at this site's own path, served by
+         the router in src/index.js. data-phase2 is kept as the record of what
+         each was repointed to.
+
+         Each was exercised before its tile moved, not merely loaded: dealer3
+         reports crossOriginIsolated and generates deals, bridge-solver solves
+         a board, pbn-to-pdf renders a real PDF, pdf-handouts loads its wasm.
+
          A "Docs" action joins these three in Phase 5, when there are docs to
          link; a button that 404s would be worse than a button that is absent. -->
 
@@ -180,7 +185,7 @@
         <div class="tile-desc">Fast double-dummy solver with par scoring, cardplay analysis and PBN processing.</div>
         <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
         <div class="tile-actions">
-          <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="bridge-solver" data-phase2="/bridge-solver/" href="https://bridge-solver.pages.dev/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
+          <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="bridge-solver" data-phase2="/bridge-solver/" href="/bridge-solver/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" data-dl="bridge-solver" href="https://github.com/bridge-craftwork/bridge-solver/releases/latest">Download CLI</a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/bridge-solver">Source</a>
         </div>
@@ -202,7 +207,7 @@
         <div class="tile-desc">Rust rebuild of the classic <span class="mono">dealer.exe</span> hand generator &#8212; runs its scripts, accepts its command line.</div>
         <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
         <div class="tile-actions">
-          <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="dealer3" data-phase2="/dealer3/" href="https://dealer3.pages.dev/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
+          <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="dealer3" data-phase2="/dealer3/" href="/dealer3/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" data-dl="dealer3" href="https://github.com/bridge-craftwork/dealer3/releases/latest">Download CLI</a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/dealer3">Source</a>
         </div>
@@ -232,7 +237,7 @@
         <div class="tile-desc">Turn a PBN file into printable hand diagrams, declarer&#8217;s-plan worksheets and bidding sheets.</div>
         <div class="tile-tags"><span class="tag tag-slate">v0.18.0</span><span class="tag tag-blue">Runs offline</span></div>
         <div class="tile-actions">
-          <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="pbn-to-pdf" data-phase2="/pbn-to-pdf/" href="https://pbn-to-pdf.bridge-classroom.org/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
+          <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="pbn-to-pdf" data-phase2="/pbn-to-pdf/" href="/pbn-to-pdf/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" data-dl="pbn-to-pdf" href="https://github.com/bridge-craftwork/pbn-to-pdf/releases/latest">Download CLI</a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/pbn-to-pdf">Source</a>
         </div>
@@ -257,7 +262,7 @@
         <div class="tile-desc">Merge PDFs and screenshots into a handout with custom headers and footers.</div>
         <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
         <div class="tile-actions">
-          <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="pdf-handouts" data-phase2="/pdf-handouts/" href="https://bridge-craftwork.github.io/pdf-handouts/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
+          <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="pdf-handouts" data-phase2="/pdf-handouts/" href="/pdf-handouts/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" data-dl="pdf-handouts" href="https://github.com/bridge-craftwork/pdf-handouts/releases/latest">Download CLI</a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/pdf-handouts">Source</a>
         </div>
