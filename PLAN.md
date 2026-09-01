@@ -123,7 +123,8 @@ All new. No existing URL changes, so this can land and sit while the rest waits.
    - `site/index.html` — launcher
    - `site/styles.css` — **copy** Bridge-Classroom's `docs/styles.css` (design
      tokens); don't fetch cross-domain
-   - `site/favicon.svg` — needs its own mark (see open questions)
+   - `site/favicon.svg` — **done**: a steel wrench, deliberately not the
+     classroom's green spade. A placeholder by intent (see below).
 2. **The apex is a Worker with Static Assets, not a Pages project.** It has to
    serve the site *and* route tool paths, which a Pages project can't do.
    Bridge-Classroom already uses this product (`wrangler.jsonc`,
@@ -136,12 +137,29 @@ All new. No existing URL changes, so this can land and sit while the rest waits.
      "assets": { "directory": "./site", "binding": "ASSETS" }
    }
    ```
-3. **`.github/workflows/deploy.yml`** — `wrangler deploy` via
-   `cloudflare/wrangler-action`. Needs `CLOUDFLARE_API_TOKEN` and
+3. **`.github/workflows/deploy.yml`** — `npx wrangler deploy` against a
+   pinned `wrangler` devDependency. Needs `CLOUDFLARE_API_TOKEN` and
    `CLOUDFLARE_ACCOUNT_ID`. Account: `13691335358be0d5da6e79540083d975`
    (documented as non-credential in `bridge-solver/wrangler.jsonc`).
+
+   **Not `cloudflare/wrangler-action`**, which this plan originally specified.
+   Left unpinned it falls back to wrangler 3.90.0, which predates Workers
+   Static Assets — Bridge-Classroom hit exactly that and moved to `npx
+   wrangler`. Pinning the action's `wranglerVersion` would also work; matching
+   the sibling repo is worth more than the action's convenience.
+
+   The workflow **self-gates** on the secret's presence (`if: env.CF_API_TOKEN
+   != ''`), so it can merge and sit harmlessly before Cloudflare is set up.
 4. **Tiles point at the tools' CURRENT URLs.** Deliberate: the site is live and
-   useful before any tool moves, and Phase 2 repoints one tile at a time.
+   useful before any tool moves, and Phase 2 repoints one tile at a time. Each
+   `Try in browser` link carries `data-tool` and `data-phase2` attributes naming
+   its eventual path, so Phase 2 is a mechanical edit rather than a re-reading
+   of this plan.
+
+   **Three actions, not four, until Phase 5.** `Docs` is in the decision table
+   above and belongs there, but there are no docs yet and a button that 404s is
+   worse than one that is absent. The action row already wraps to a second line,
+   so adding it later costs no layout work.
 5. **Attach `bridge-craftwork.com` + `www`** as custom domains. Cloudflare's
    CNAME flattening handles the apex.
 
@@ -273,13 +291,35 @@ it creep.
 
 ---
 
+## Decided
+
+1. **Repo licence — Unlicense**, matching `pbn-to-pdf` and `dealer3`. `LICENSE`
+   is in the repo.
+
+2. **The services are NOT documented here.** Answers the Phase 5 question, and
+   the answer is no — not "not yet, pending scope", but no on capacity grounds.
+   `solver.`, `ben.`, `dealer.` and `tables.` are publicly reachable but
+   deliberately **unadvertised**, and they will not scale well to worldwide
+   attention: they are one DigitalOcean droplet behind a shared Caddy proxy.
+   Documenting a public HTTP API is advertising it. Phase 5 covers the four
+   browser tools only.
+
+   Revisit only alongside a capacity plan — never on the grounds that the docs
+   would be useful, because that was never the part in doubt.
+
+3. **Favicon — a wrench**, at `site/favicon.svg`. Deliberately not the
+   classroom's green spade, which would blur two products that are being
+   separated on purpose. **Placeholder by intent**: it exists so the site never
+   waits on a visual identity, and it is one self-contained file to replace when
+   something more developed turns up. Don't treat it as a brand decision.
+
+---
+
 ## Open questions
 
-1. **Favicon / visual identity.** Reusing the classroom's green spade would blur
-   two products that are deliberately being separated.
-2. **Repo licence.** `pbn-to-pdf` and `dealer3` are Unlicense; this repo has none.
-3. **Do the services get documented here?** (Phase 5.)
-4. **`www` or bare apex** as canonical, with a redirect from the other.
+1. **`www` or bare apex** as canonical, with a redirect from the other.
+   Phase 1 attaches both; this only decides which one redirects.
+2. **Visual identity beyond the favicon.** Wanted eventually, blocking nothing.
 
 ---
 

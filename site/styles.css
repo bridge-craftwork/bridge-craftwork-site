@@ -1,0 +1,46 @@
+/* Design tokens, COPIED from Bridge-Classroom's docs/styles.css.
+   Copied deliberately, not fetched cross-domain: the two sites are separate
+   products on separate domains, and a live link would couple them.
+   Re-copy by hand if the tokens there change. */
+
+:root {
+  /* Text */
+  --color-text-primary:     #1a1a1a;
+  --color-text-secondary:   #6b7280;
+  --color-text-tertiary:    #9ca3af;
+
+  /* Backgrounds */
+  --color-background-primary:   #ffffff;
+  --color-background-secondary: #f3f4f6;
+  --color-background-tertiary:  #e9eaeb;
+
+  /* Borders */
+  --color-border-tertiary:  rgba(0, 0, 0, 0.10);
+  --color-border-secondary: rgba(0, 0, 0, 0.20);
+  --color-border-primary:   rgba(0, 0, 0, 0.35);
+
+  /* Semantic */
+  --color-background-info:    #E6F1FB;
+  --color-text-info:          #185FA5;
+  --color-background-success: #E1F5EE;
+  --color-text-success:       #0F6E56;
+  --color-background-warning: #FEF3C7;
+  --color-text-warning:       #92400E;
+  --color-background-danger:  #FEE2E2;
+  --color-text-danger:        #991B1B;
+
+  /* Layout */
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+               Helvetica, Arial, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono',
+               'Consolas', 'Courier New', monospace;
+  --font-serif: Georgia, 'Times New Roman', serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background: var(--color-background-tertiary); color: var(--color-text-primary); }

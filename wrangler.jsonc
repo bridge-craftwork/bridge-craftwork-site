@@ -1,0 +1,55 @@
+// Cloudflare Worker config for the Worker that serves bridge-craftwork.com.
+//
+// A Worker with Static Assets rather than a Pages project, because the apex has
+// to do two things a Pages project cannot do together: serve this repo's site
+// AND route each tool's path to that tool's own Pages project. See PLAN.md.
+//
+// DEPLOY: by `.github/workflows/deploy.yml`, which runs `npx wrangler deploy`
+// against the pinned devDependency. Deliberately NOT cloudflare/wrangler-action:
+// unpinned it falls back to wrangler 3.90.0, which predates Workers Static
+// Assets. Keep any Cloudflare dashboard Git auto-build DISABLED so this stays
+// the only deploy path.
+//
+// Manual fallback (needs an authed CLI): `npx wrangler deploy`.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bridge-craftwork-site",
+  "compatibility_date": "2026-08-31",
+
+  // Present from Phase 1 even though the Worker only passes through to ASSETS
+  // today: Phase 2's tool-path router lands in this same entry point, so the
+  // wiring is here rather than being a hosting change disguised as a feature.
+  "main": "src/index.js",
+
+  // Custom domains. Unlike a PAGES project — where custom domains are
+  // dashboard/API state that wrangler will not create (see the note in
+  // pbn-to-pdf/wrangler.jsonc) — a WORKER's custom domains are config, and
+  // `wrangler deploy` creates the proxied DNS records for them. So the
+  // hostnames this Worker answers on are a reviewable diff, like everything
+  // else about the deploy.
+  //
+  // Cloudflare's CNAME flattening is what makes the apex work.
+  //
+  // Both hostnames serve the site. Which one is CANONICAL — with the other
+  // redirecting — is still open (PLAN.md), and is a separate change: a zone
+  // Redirect Rule, or a redirect in src/index.js. Attaching both first is
+  // what makes that decision reversible.
+  //
+  // These touch ONLY the apex and www. The service subdomains — solver.,
+  // ben., dealer., tables., game-parser. — are DNS-only records pointing at
+  // the droplet and are not affected. Subdomains are machines, paths are pages.
+  "routes": [
+    { "pattern": "bridge-craftwork.com", "custom_domain": true },
+    { "pattern": "www.bridge-craftwork.com", "custom_domain": true }
+  ],
+
+  "observability": { "enabled": true },
+
+  // Static assets are matched FIRST; anything with no matching asset falls
+  // through to the Worker above. The binding is what lets the Worker serve
+  // assets itself once the router needs to choose.
+  "assets": {
+    "directory": "./site",
+    "binding": "ASSETS"
+  }
+}

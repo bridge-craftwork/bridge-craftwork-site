@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bridge Craftwork &#183; Bridge tools for the browser and the command line</title>
+<link rel="canonical" href="https://bridge-craftwork.com/">
+<meta name="description" content="Free, open-source bridge tools. Convert PBN files to printable hand diagrams, generate deals, solve double-dummy, and build handouts &#8212; in your browser, or as a command-line program.">
+<meta name="author" content="Bridge Craftwork">
+<meta property="og:title" content="Bridge Craftwork">
+<meta property="og:description" content="Free, open-source bridge tools for the browser and the command line.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bridge-craftwork.com">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* Accent is slate, not the classroom's green. The two products share the design
+   tokens in styles.css and nothing else; see PLAN.md on why they stay apart. */
+:root{--accent:#475569;--accent-strong:#334155;--accent-soft:#EEF1F5;--suit-red:#C0392B}
+
+.page{background:var(--color-background-tertiary);padding:40px 24px 48px}
+
+.header{text-align:center;margin-bottom:32px}
+.header-logo{display:flex;align-items:center;justify-content:center;gap:11px;font-size:24px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px}
+.header-sub{font-size:16px;color:var(--color-text-secondary);max-width:620px;margin:0 auto;line-height:1.55}
+
+.grid-outer{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.section-label{font-size:14px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap}
+.section-line{flex:1;height:0.5px;background:var(--color-border-tertiary)}
+.section-note{font-size:13px;color:var(--color-text-tertiary);margin:-6px 0 14px}
+
+.tiles{display:flex;gap:18px;flex-wrap:wrap}
+.tile{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;width:260px;transition:border-color 0.15s;display:flex;flex-direction:column;flex-shrink:0}
+.tile:hover{border-color:var(--color-border-secondary)}
+
+.tile-body{padding:14px 16px 16px;display:flex;flex-direction:column;flex:1}
+.tile-name{font-size:16px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.tile-desc{font-size:14px;color:var(--color-text-secondary);line-height:1.5}
+.tile-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+/* Wraps deliberately: three buttons do not fit 260px on one line (they
+   clipped "Source" before this). Try gets its own full-width row as the
+   primary CTA, the rest share the row below — which is also where a Docs
+   button fits in Phase 5 without another reflow. */
+.tile-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:12px}
+.tbtn{font-size:13px;font-weight:500;padding:8px 12px;border-radius:var(--border-radius-md);text-decoration:none;text-align:center;transition:background 0.15s,border-color 0.15s;white-space:nowrap}
+.tbtn-try{background:var(--accent);color:#fff;flex:1 1 100%}
+.tile-actions>.tbtn-ghost{flex:1 1 0;min-width:0}
+.tbtn-try:hover{background:var(--accent-strong)}
+.tbtn-ghost{background:transparent;color:var(--accent-strong);border:1px solid var(--color-border-secondary)}
+.tbtn-ghost:hover{border-color:var(--accent)}
+.tile-actions>.tbtn-ghost:only-child{flex:1}
+
+.tag{font-size:12px;padding:3px 9px;border-radius:20px;font-weight:500}
+.tag-slate{background:var(--accent-soft);color:var(--accent-strong)}
+.tag-blue{background:#E6F1FB;color:#185FA5}
+.tag-amber{background:#FEF3C7;color:#92400E}
+.tag-gray{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+
+/* ── Tile previews ──────────────────────────────────────────────────────
+   Mock-ups of each tool's real output, in the .thumb convention borrowed
+   from Bridge-Classroom's hub. Illustrative, not live screenshots. */
+.thumb{height:132px;position:relative;overflow:hidden;background:var(--color-background-secondary)}
+.mono{font-family:var(--font-mono)}
+.red{color:var(--suit-red)}
+
+/* pbn-to-pdf — a printed hand-diagram sheet */
+.thumb-pbn{background:#F4F5F7;padding:9px 10px}
+.pbn-sheet{background:#fff;border:0.5px solid #dcdee3;border-radius:2px;height:100%;padding:7px 8px;display:flex;flex-direction:column;gap:5px}
+.pbn-head{display:flex;justify-content:space-between;font-size:8px;color:#8a8f98;letter-spacing:0.03em}
+.pbn-diagram{display:flex;justify-content:center;gap:9px;font-size:8.5px;line-height:1.35;color:#222}
+.pbn-seat{min-width:44px}
+.pbn-seat-label{font-size:7px;color:#a3a8b0;letter-spacing:0.05em}
+.pbn-rules{margin-top:auto;display:flex;flex-direction:column;gap:3px}
+.pbn-rule{height:0.5px;background:#e6e8ec}
+.pbn-rule.short{width:58%}
+
+/* dealer3 — a dealer script in a terminal */
+.thumb-deal{background:#2C3440;padding:10px 11px;font-size:8.5px;line-height:1.6;color:#c9d3e0}
+.dl-kw{color:#8FB8E8}
+.dl-fn{color:#9ED4A8}
+.dl-num{color:#E8C07D}
+.dl-cm{color:#6E7A8A}
+
+/* pdf-handouts — pages stacking into one handout */
+.thumb-pdf{background:#F6F4EF;display:flex;align-items:center;justify-content:center;gap:7px}
+.ph-stack{position:relative;width:46px;height:60px}
+.ph-page{position:absolute;inset:0;background:#fff;border:0.5px solid #d8d4c8;border-radius:2px}
+.ph-page:nth-child(1){transform:translate(-6px,-5px) rotate(-4deg)}
+.ph-page:nth-child(2){transform:translate(-2px,-2px) rotate(-1.5deg)}
+.ph-arrow{font-size:13px;color:#b3ac99}
+.ph-out{width:48px;height:62px;background:#fff;border:0.5px solid #c9c3b2;border-radius:2px;display:flex;flex-direction:column;padding:4px}
+.ph-bar{height:4px;background:#8a8676;border-radius:1px}
+.ph-fill{flex:1;margin:4px 0;background:repeating-linear-gradient(180deg,#eceae4 0 2px,transparent 2px 5px)}
+
+/* bridge-solver — the double-dummy trick table */
+.thumb-solve{background:#F4F5F7;padding:10px;display:flex;align-items:center;justify-content:center}
+.ddt{border-collapse:collapse;font-size:8.5px;background:#fff;border:0.5px solid #dcdee3}
+.ddt th,.ddt td{padding:2.5px 6px;text-align:center;border:0.5px solid #e8eaee;color:#333}
+.ddt th{background:#f0f1f4;color:#7a808a;font-weight:500}
+.ddt td.hi{background:var(--accent-soft);color:var(--accent-strong);font-weight:600}
+
+/* bridge-rulebot — cards played with their reason codes */
+.thumb-bot{background:#F4F5F7;padding:11px;display:flex;flex-direction:column;gap:5px;justify-content:center}
+.rb-row{display:flex;align-items:center;gap:6px;font-size:8.5px}
+.rb-card{background:#fff;border:0.5px solid #dcdee3;border-radius:2px;padding:2px 5px;min-width:26px;text-align:center;color:#222}
+.rb-arrow{color:#b0b5bd}
+.rb-code{background:var(--accent-soft);color:var(--accent-strong);border-radius:2px;padding:2px 5px;font-size:7.5px;letter-spacing:0.02em}
+
+.footer{text-align:center;margin:40px auto 0;padding-top:24px;border-top:0.5px solid var(--color-border-tertiary);max-width:1100px}
+.footer-links{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:12px;flex-wrap:wrap}
+.footer-link{font-size:14px;color:var(--color-text-secondary);text-decoration:none}
+.footer-link:hover{color:var(--color-text-primary)}
+.footer-copy{font-size:13px;color:var(--color-text-tertiary);line-height:1.6}
+
+@media (max-width:600px){.page{padding:28px 14px 36px}.tile{width:100%}}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+<header class="header">
+  <div class="header-logo">
+    <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
+      <g fill="none" stroke="var(--accent)">
+        <path d="M10.9 21.1 21.1 10.9" stroke-width="3.6"/>
+        <circle cx="23.5" cy="8.5" r="3.8" stroke-width="2.4"/>
+        <path d="M4.93 22.2A3.8 3.8 0 1 1 9.8 27.07" stroke-width="2.4"/>
+      </g>
+    </svg>
+    Bridge Craftwork
+  </div>
+  <p class="header-sub">Free, open-source tools for bridge players and teachers. Every one runs in your
+    browser with nothing to install &#8212; and every one is also a command-line program, if you
+    would rather have it on your own machine.</p>
+</header>
+
+<main class="grid-outer">
+
+<section>
+  <div class="section-header"><span class="section-label">Tools</span><span class="section-line"></span></div>
+  <div class="tiles">
+
+    <!-- PHASE 1: every "Try in browser" points at the tool's CURRENT live URL,
+         so this site is useful before any tool moves. Phase 2 repoints them one
+         at a time to the paths in data-phase2 as each is verified working.
+         A "Docs" action joins these three in Phase 5, when there are docs to
+         link; a button that 404s would be worse than a button that is absent. -->
+
+    <article class="tile">
+      <div class="thumb thumb-pbn">
+        <div class="pbn-sheet">
+          <div class="pbn-head"><span>Board 1</span><span>Dealer N &#183; None vul</span></div>
+          <div class="pbn-diagram mono">
+            <div class="pbn-seat">
+              <div class="pbn-seat-label">NORTH</div>
+              &#9824; AK7<br><span class="red">&#9829; Q104</span><br><span class="red">&#9830; KJ3</span><br>&#9827; 8642
+            </div>
+            <div class="pbn-seat">
+              <div class="pbn-seat-label">SOUTH</div>
+              &#9824; QJ52<br><span class="red">&#9829; AK9</span><br><span class="red">&#9830; A874</span><br>&#9827; K9
+            </div>
+          </div>
+          <div class="pbn-rules"><div class="pbn-rule"></div><div class="pbn-rule"></div><div class="pbn-rule short"></div></div>
+        </div>
+      </div>
+      <div class="tile-body">
+        <div class="tile-name">PBN to PDF</div>
+        <div class="tile-desc">Turn a PBN file into printable hand diagrams, declarer&#8217;s-plan worksheets and bidding sheets.</div>
+        <div class="tile-tags"><span class="tag tag-slate">v0.18.0</span><span class="tag tag-blue">Runs offline</span></div>
+        <div class="tile-actions">
+          <a class="tbtn tbtn-try" data-tool="pbn-to-pdf" data-phase2="/pbn-to-pdf/" href="https://pbn-to-pdf.bridge-classroom.org/">Try in browser</a>
+          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/pbn-to-pdf/releases/latest">Download</a>
+          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/pbn-to-pdf">Source</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="tile">
+      <div class="thumb thumb-deal mono">
+        <div><span class="dl-cm"># strong NT opener</span></div>
+        <div><span class="dl-kw">condition</span></div>
+        <div>&nbsp;&nbsp;<span class="dl-fn">hcp</span>(north) &gt;= <span class="dl-num">15</span> <span class="dl-kw">and</span></div>
+        <div>&nbsp;&nbsp;<span class="dl-fn">shape</span>(north, <span class="dl-kw">any</span> <span class="dl-num">4333</span>)</div>
+        <div><span class="dl-kw">produce</span> <span class="dl-num">24</span></div>
+        <div><span class="dl-cm">generated 24 in 0.4s</span></div>
+      </div>
+      <div class="tile-body">
+        <div class="tile-name">dealer3</div>
+        <div class="tile-desc">Rust rebuild of the classic <span class="mono">dealer.exe</span> hand generator &#8212; runs its scripts, accepts its command line.</div>
+        <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
+        <div class="tile-actions">
+          <a class="tbtn tbtn-try" data-tool="dealer3" data-phase2="/dealer3/" href="https://dealer3.pages.dev/">Try in browser</a>
+          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/dealer3/releases/latest">Download</a>
+          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/dealer3">Source</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="tile">
+      <div class="thumb thumb-pdf">
+        <div class="ph-stack">
+          <div class="ph-page"></div><div class="ph-page"></div><div class="ph-page"></div>
+        </div>
+        <div class="ph-arrow">&#8594;</div>
+        <div class="ph-out">
+          <div class="ph-bar"></div>
+          <div class="ph-fill"></div>
+          <div class="ph-bar"></div>
+        </div>
+      </div>
+      <div class="tile-body">
+        <div class="tile-name">PDF Handouts</div>
+        <div class="tile-desc">Merge PDFs and screenshots into a handout with custom headers and footers.</div>
+        <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
+        <div class="tile-actions">
+          <a class="tbtn tbtn-try" data-tool="pdf-handouts" data-phase2="/pdf-handouts/" href="https://bridge-craftwork.github.io/pdf-handouts/">Try in browser</a>
+          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/pdf-handouts/releases/latest">Download</a>
+          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/pdf-handouts">Source</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="tile">
+      <div class="thumb thumb-solve">
+        <table class="ddt mono">
+          <tr><th></th><th>&#9827;</th><th class="red">&#9830;</th><th class="red">&#9829;</th><th>&#9824;</th><th>NT</th></tr>
+          <tr><th>N</th><td>7</td><td>9</td><td class="hi">11</td><td>6</td><td>8</td></tr>
+          <tr><th>S</th><td>7</td><td>9</td><td class="hi">11</td><td>6</td><td>8</td></tr>
+          <tr><th>E</th><td>6</td><td>4</td><td>2</td><td>7</td><td>4</td></tr>
+          <tr><th>W</th><td>6</td><td>4</td><td>2</td><td>7</td><td>4</td></tr>
+        </table>
+      </div>
+      <div class="tile-body">
+        <div class="tile-name">bridge-solver</div>
+        <div class="tile-desc">Fast double-dummy solver with par scoring, cardplay analysis and PBN processing.</div>
+        <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
+        <div class="tile-actions">
+          <a class="tbtn tbtn-try" data-tool="bridge-solver" data-phase2="/bridge-solver/" href="https://bridge-solver.pages.dev/">Try in browser</a>
+          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/bridge-solver/releases/latest">Download</a>
+          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/bridge-solver">Source</a>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section>
+  <div class="section-header"><span class="section-label">Libraries</span><span class="section-line"></span></div>
+  <p class="section-note">Not a tool you can open &#8212; a component the tools build on.</p>
+  <div class="tiles">
+
+    <article class="tile">
+      <div class="thumb thumb-bot mono">
+        <div class="rb-row"><span class="rb-card">&#9824; 7</span><span class="rb-arrow">&#8594;</span><span class="rb-code">SECOND_HAND_LOW</span></div>
+        <div class="rb-row"><span class="rb-card red">&#9829; K</span><span class="rb-arrow">&#8594;</span><span class="rb-code">COVER_AN_HONOUR</span></div>
+        <div class="rb-row"><span class="rb-card">&#9827; 4</span><span class="rb-arrow">&#8594;</span><span class="rb-code">DUCK_TO_KEEP_ENTRY</span></div>
+      </div>
+      <div class="tile-body">
+        <div class="tile-name">bridge-rulebot</div>
+        <div class="tile-desc">Deterministic rule-based cardplay bot with teachable reason codes &#8212; it says <em>why</em> it played the card.</div>
+        <div class="tile-tags"><span class="tag tag-gray">No web UI</span><span class="tag tag-amber">No release yet</span></div>
+        <div class="tile-actions">
+          <a class="tbtn tbtn-ghost" href="https://github.com/bridge-craftwork/bridge-rulebot">Source</a>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-links">
+    <a class="footer-link" href="https://github.com/bridge-craftwork">GitHub</a>
+    <a class="footer-link" href="https://patreon.com/BridgeCraftwork">Patreon</a>
+    <a class="footer-link" href="mailto:bridge-craftwork@gmail.com">Email</a>
+    <a class="footer-link" href="https://bridge-classroom.com">Bridge Classroom</a>
+  </div>
+  <div class="footer-copy">
+    Bridge Craftwork &#183; free &amp; open source &#183; bridge-craftwork.com<br>
+    Teaching a class? <a class="footer-link" href="https://bridge-classroom.com">Bridge Classroom</a> is the companion site &#8212; lessons, practice and club game analysis.
+  </div>
+</footer>
+
+</div>
+
+</body>
+</html>
