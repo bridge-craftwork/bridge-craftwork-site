@@ -21,29 +21,40 @@
 
 const APEX = 'bridge-craftwork.com'
 
-// How each tool's release assets are named. Three of the four name theirs
-// with nothing but the platform, so the URL can be CONSTRUCTED and handed to
-// GitHub's own `releases/latest/download/<name>` redirect — no API call, so
-// nothing to rate limit, and `latest` is still resolved by GitHub rather than
-// pinned here.
+// How each tool's release assets are named, as a function of the platform —
+// and, for the one tool that needs it, the release version.
 //
-// The prefix also matters for the one tool that needs the API: bridge-solver
-// ships `solver-diag-*` in the same release, and matching on the platform
-// alone would hand someone the diagnostic binary instead of the solver.
+// The name is CONSTRUCTED and handed to GitHub's own
+// `releases/latest/download/<name>` redirect. Nothing calls the GitHub API:
+// unauthenticated API calls are rate limited per IP, and a Worker's
+// subrequests leave from Cloudflare addresses shared with everyone else's, so
+// that lookup gets refused much of the time. `latest` is still resolved by
+// GitHub rather than pinned here.
 //
 // An archive rather than the bare binary throughout — a bare executable
-// downloads as an untrusted file and will not run without extra steps.
+// downloads as an untrusted file and will not run without extra steps. This is
+// also why bridge-solver's `solver-diag-*` can never be picked by accident:
+// the name is built, not searched for.
 const TOOLS = {
-  'bridge-solver': { prefix: 'bridge-solver-', ext: (p) => (p.startsWith('windows') ? '.zip' : '.tar.gz') },
-  dealer3: { prefix: 'dealer-', ext: (p) => (p.startsWith('windows') ? '.exe.zip' : '.tar.gz') },
-  'pbn-to-pdf': { prefix: 'pbn-to-pdf-', ext: (p) => (p.startsWith('windows') ? '.zip' : '.tar.gz') },
+  'bridge-solver': {
+    name: (p) => `bridge-solver-${p}${p.startsWith('windows') ? '.zip' : '.tar.gz'}`,
+  },
+  dealer3: {
+    name: (p) => `dealer-${p}${p.startsWith('windows') ? '.exe.zip' : '.tar.gz'}`,
+  },
+  'pbn-to-pdf': {
+    name: (p) => `pbn-to-pdf-${p}${p.startsWith('windows') ? '.zip' : '.tar.gz'}`,
+  },
 
-  // pdf-handouts embeds the release version in its asset names
+  // The odd one out: pdf-handouts puts the release version in its asset names
   // (`pdf-handouts-1.0.0-macos-aarch64.zip`), so the name cannot be built from
-  // the platform alone and this one has to ask the API. If that repo ever drops
-  // the version from its asset names, give it an `ext` like the others and the
-  // API path below can go entirely.
-  'pdf-handouts': { prefix: 'pdf-handouts-', ext: null },
+  // the platform alone. The version comes from the release page's own redirect
+  // rather than the API. If that repo ever drops the version to match the
+  // other three, delete `needsVersion` and the lookup goes with it.
+  'pdf-handouts': {
+    needsVersion: true,
+    name: (p, v) => `pdf-handouts-${v}-${p}${p.startsWith('linux') ? '.tar.gz' : '.zip'}`,
+  },
 }
 
 // The platform triples every one of the four repos builds. Asset names embed
@@ -90,50 +101,27 @@ function platformFromHeaders(request) {
 }
 
 /**
- * The latest release, cached for an hour. Only pdf-handouts needs this.
+ * The newest release's tag, cached for an hour.
  *
- * Unauthenticated GitHub API calls are rate limited per IP, and a Worker's
- * subrequests leave from Cloudflare addresses shared with everyone else's —
- * so this WILL be refused some of the time. That is survivable for one tool
- * behind an hour of cache, with the release page as the fallback, but it is
- * exactly why the other three construct their URLs instead.
+ * This asks github.com, NOT api.github.com: `/releases/latest` answers with a
+ * redirect to `/releases/tag/<tag>`, and the plain site is not subject to the
+ * API's unauthenticated per-IP rate limit — which a Worker would otherwise hit
+ * constantly, since its subrequests share Cloudflare's egress addresses.
  */
-async function latestRelease(repo, ctx) {
-  const url = `https://api.github.com/repos/bridge-craftwork/${repo}/releases/latest`
+async function latestTag(repo, ctx) {
+  const url = `https://github.com/bridge-craftwork/${repo}/releases/latest`
   const cache = caches.default
   const key = new Request(url)
 
   let hit = await cache.match(key)
   if (!hit) {
-    const res = await fetch(url, {
-      headers: {
-        accept: 'application/vnd.github+json',
-        // GitHub rejects API requests that do not identify themselves.
-        'user-agent': 'bridge-craftwork-site (+https://bridge-craftwork.com)',
-      },
-    })
-    if (!res.ok) return null
-    hit = new Response(res.body, res)
-    hit.headers.set('cache-control', 'public, max-age=3600')
+    const res = await fetch(url, { redirect: 'manual' })
+    const tag = (res.headers.get('location') || '').match(/\/releases\/tag\/([^/?#]+)/)
+    if (!tag) return null
+    hit = new Response(tag[1], { headers: { 'cache-control': 'public, max-age=3600' } })
     ctx.waitUntil(cache.put(key, hit.clone()))
   }
-  try {
-    return await hit.json()
-  } catch {
-    return null
-  }
-}
-
-/** Prefer an archive: a bare binary downloads as an untrusted executable. */
-function pickAsset(assets, prefix, platform) {
-  const rank = (n) =>
-    n.endsWith('.tar.gz') || n.endsWith('.zip') ? 0 : n.endsWith('.exe') ? 1 : 2
-
-  return (
-    assets
-      .filter((a) => a.name.startsWith(prefix) && a.name.includes(platform))
-      .sort((a, b) => rank(a.name) - rank(b.name) || a.name.length - b.name.length)[0] || null
-  )
+  return (await hit.text()).trim()
 }
 
 /**
@@ -153,15 +141,14 @@ async function download(request, url, ctx) {
   if (!PLATFORMS.has(platform)) platform = platformFromHeaders(request)
   if (!platform) return Response.redirect(releasePage, 302)
 
-  // The common path: build the asset name and let GitHub resolve `latest`.
-  if (spec.ext) {
-    const name = spec.prefix + platform + spec.ext(platform)
-    return Response.redirect(`${releasePage}/download/${name}`, 302)
+  let version = null
+  if (spec.needsVersion) {
+    const tag = await latestTag(tool, ctx)
+    if (!tag) return Response.redirect(releasePage, 302)
+    version = tag.replace(/^v/, '')
   }
 
-  const release = await latestRelease(tool, ctx)
-  const asset = release && pickAsset(release.assets || [], spec.prefix, platform)
-  return Response.redirect(asset ? asset.browser_download_url : releasePage, 302)
+  return Response.redirect(`${releasePage}/download/${spec.name(platform, version)}`, 302)
 }
 
 export default {
