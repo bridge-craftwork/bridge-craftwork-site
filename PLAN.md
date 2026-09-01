@@ -1,52 +1,86 @@
 # Project plan — bridge-craftwork.com
 
-Give the Bridge Craftwork CLI tools a proper home. Today their browser builds
-are scattered across two domains and three hosting shapes; `bridge-craftwork.com`
-is registered, sits on Cloudflare, serves five subdomains — and has nothing at
-the apex.
+Give the Bridge Craftwork tools a proper home: a launcher **and documentation
+site** at `bridge-craftwork.com`, with each tool's browser build mounted on a
+path under it.
+
+Today the browser builds are scattered across two domains and three hosting
+shapes, and one of them sits on `bridge-classroom.org` — the domain deliberately
+kept separate from all of this.
 
 ---
 
-## Why here, and not on bridge-classroom
+## Why here
 
-Three reasons, in the order they actually matter:
+1. **Reputation isolation.** The services were put on `bridge-craftwork.com` in
+   the first place to keep `bridge-classroom.com` clean — that domain carries
+   the recovery email's SPF/DKIM/DMARC and all the student-facing traffic, and
+   it should not also be the domain answering API calls and serving tool
+   traffic. The tools belong on the same side of that line as the services.
+   (Note that `pbn-to-pdf.bridge-classroom.org` today is exactly the mixing the
+   split exists to prevent.)
+2. **Branding.** The GitHub org, the email and the Patreon are all
+   *bridge-craftwork*. The web presence is the only part that isn't.
+3. **Somewhere to document the tools.** Four CLIs with real releases and no
+   documentation site between them. This is the natural home, and it is the
+   reason the site is more than a grid of tiles.
 
-1. **`bridge-craftwork.com` is already the tooling domain.** `solver.`, `ben.`,
-   `dealer.`, `tables.` and `game-parser.` all run there behind one shared Caddy
-   proxy. The zone is live and load-bearing; the apex is the only empty part of
-   it. This is filling in a hole, not standing up a new domain.
+Secondary, but real: the tools don't fit bridge-classroom's taxonomy. That hub
+sorts by audience *within a teaching product* — "For students / Teacher
+resources / Author tools" — and a general-purpose PBN→PDF converter is none of
+those.
 
-2. **The tools don't fit the classroom's taxonomy.** bridge-classroom.com's hub
-   sorts by audience *within a teaching product* — "For students / Teacher
-   resources / Author tools". A general-purpose PBN→PDF converter is none of
-   those. (It was filed under Teacher Tools on 2026-08-31 and is visibly the odd
-   tile: everything else there is tied to lessons, classes or students.)
-
-3. **The landing page has a different job.** bridge-classroom's tiles sell a
-   teaching product. These tiles run a funnel: browser build → CLI download.
-   Different call to action, different tile.
-
-`bridge-classroom.com/.org` keeps linking here. This is a sibling, not a
-replacement.
+`bridge-classroom.com/.org` keeps linking here. Sibling, not replacement.
 
 ---
 
-## Decisions already made
+## Decisions made
 
 | Decision | Choice | Why |
 | --- | --- | --- |
 | Domain | `bridge-craftwork.com` | Already the tooling domain; apex empty |
-| URL shape | **Subdomain per tool** — `pbn-to-pdf.bridge-craftwork.com` | Matches the five existing service hosts; needs no Vite `base` change in any tool repo; each repo keeps its independent deploy |
-| Apex | Launcher only | No tool is served from the apex |
-| Hosting | Cloudflare Pages | 3 of the 4 tool repos already use it |
-| Tile CTA | Try in browser · Download CLI · View source | The funnel is the point |
+| **URL shape** | **Path per tool** — `bridge-craftwork.com/pbn-to-pdf/` | See below |
+| Subdomains | **Reserved for machines** | Services only. No tool gets one. |
+| Apex hosting | Worker with Static Assets + path router | Serves the site; proxies tool paths |
+| Tool hosting | Unchanged — each repo's own Cloudflare Pages project | Repos stay independently deployable |
+| Tile CTA | Try in browser · Download CLI · Docs · Source | The funnel is the point |
 
-**Rejected: path per tool** (`bridge-craftwork.com/pbn-to-pdf/`). Same-origin
-would let tools share settings — the argument Bridge-Classroom's
-`build-site.sh` makes for co-locating game-analysis — but these tools are
-self-contained file-in/file-out converters that share no identity or state, so
-the benefit is theoretical while the cost (a `base` change plus a route per
-repo, across four repos) is real.
+### Why paths, not a subdomain per tool
+
+The subdomain scheme was the first choice and was **reversed** — the reasoning
+is worth keeping, because it is easy to re-derive the wrong answer.
+
+Services and wasm pages are already separate infrastructure. Verified
+2026-08-31:
+
+| | Services | Wasm pages |
+| --- | --- | --- |
+| Resolves to | `146.190.135.172` (droplet, all five) | Cloudflare anycast |
+| Proxy | none — DNS-only, no `cf-ray` | proxied |
+| TLS | Caddy's own per-host Let's Encrypt cert | Cloudflare-issued |
+| Deploy | droplet, systemd/Docker | `wrangler pages deploy` from CI |
+
+They share only the DNS zone. But a *flat subdomain namespace hides that* — a
+reader can't tell `solver.` (a live API) from `bridge-solver.` (a static page),
+and those two would have sat next to each other. A naming convention would have
+documented the distinction; paths **remove** it. The website is the website;
+subdomains are machines.
+
+This also matters because the tools are the only thing users ever see. The
+services are plumbing — nobody types `solver.bridge-craftwork.com`. The
+user-visible surface should be the coherent one.
+
+**And it turns out to be nearly free** (verified 2026-08-31): every tool already
+builds with **relative asset URLs** — `base: './'` in all three Vite configs,
+and hand-written relative `href`/`src` in pdf-handouts' HTML. So each tool works
+at any path depth **with no build change at all**. The `base`-per-repo cost that
+argued for subdomains does not exist.
+
+Bonus: dealer3 sets `Cross-Origin-Opener-Policy: same-origin` and
+`Cross-Origin-Embedder-Policy: require-corp` for its threaded wasm. Under paths
+everything it loads is same-origin, so `require-corp` is satisfied without
+adding CORP headers — strictly easier than it would have been across a subdomain
+boundary.
 
 ---
 
@@ -60,215 +94,207 @@ repo, across four repos) is real.
 | bridge-solver | *(built, no custom domain)* | Cloudflare Pages + Functions | v1.0.0, 12 assets |
 | bridge-rulebot | *(wasm crate, no web UI)* | — | none |
 
-Four tools, two domains, three hosting shapes, one `github.io` URL.
-
 ## Target state
 
 ```
-bridge-craftwork.com                 → this repo (launcher)
-pbn-to-pdf.bridge-craftwork.com      → pbn-to-pdf/web
-dealer3.bridge-craftwork.com         → dealer3/web
-pdf-handouts.bridge-craftwork.com    → pdf-handouts/web
-bridge-solver.bridge-craftwork.com   → bridge-solver/web
+bridge-craftwork.com/                  → launcher (this repo)
+bridge-craftwork.com/pbn-to-pdf/       → pbn-to-pdf.pages.dev
+bridge-craftwork.com/dealer3/          → dealer3.pages.dev
+bridge-craftwork.com/pdf-handouts/     → pdf-handouts.pages.dev
+bridge-craftwork.com/bridge-solver/    → bridge-solver.pages.dev
+bridge-craftwork.com/docs/<tool>/      → documentation (this repo)
 ```
 
-Unchanged and untouched: `solver.`, `ben.`, `dealer.`, `tables.`,
-`game-parser.`, `livekit.` — the running backend services.
+Untouched: `solver.` `dealer.` `ben.` `tables.` `game-parser.` `livekit.` —
+the running services. **Do not repurpose these.** Both `solver.` and `dealer.`
+were probed on 2026-08-31 and are live (`/dd` returns a real result in 99ms;
+`/deal` returns a serde error naming the field it wants), and both are hardcoded
+production defaults in the Bridge-Classroom frontend (`ddsClient.js`,
+`dealerClient.js`). A 404 at `/` means "no route at the root", not "nothing
+there" — probe a real endpoint before concluding a host is free.
 
 ---
 
-## Hostname convention — collision resolved
+## Phase 1 — Stand up the site *(additive; breaks nothing)*
 
-**Verified live on 2026-08-31.** `solver.` and `dealer.` were checked directly,
-not assumed. A 404 at `/` means only "no route at the root"; the real endpoints
-answer:
+All new. No existing URL changes, so this can land and sit while the rest waits.
 
-```
-POST solver.bridge-craftwork.com/dd    → 200 in 99ms
-                                          {"ddtricks":"dcccddcccd00000V000V","cached":false}
-POST dealer.bridge-craftwork.com/deal  → 422, serde naming the field it wants (`script`)
-```
-
-Both are also hardcoded as production defaults in the shipped Bridge-Classroom
-frontend — `ddsClient.js` (`VITE_SOLVER_URL ||` that host, with
-`.env.production` deliberately leaving the override unset) and
-`dealerClient.js`. Repurposing either would point the live `.com`/`.org` site at
-a static page: the solver would degrade quietly (DD is best-effort, `null` on
-failure), the deal generator would visibly break the hub tile.
-
-**So the two kinds of host get two kinds of name:**
-
-| Kind | Naming | Examples |
-| --- | --- | --- |
-| Backend HTTP service (droplet, behind Caddy) | the **capability** | `solver.` `dealer.` `ben.` `tables.` `game-parser.` |
-| Browser build of a CLI (Cloudflare Pages) | the **repo name** | `pbn-to-pdf.` `dealer3.` `bridge-solver.` `pdf-handouts.` |
-
-This scales to the next tool without another collision, and the hostname alone
-tells you which kind of thing you are looking at — worth having when an API and
-a browser build of the *same* algorithm sit on adjacent hostnames.
-
-Applied: the bridge-solver web build gets **`bridge-solver.bridge-craftwork.com`**,
-not `solver.`. Nothing is deployed yet, so this is still cheap to change —
-but change it before Phase 2, not after.
-
----
-
-## Phase 1 — Stand up the launcher *(additive; breaks nothing)*
-
-Everything here is new. No existing URL changes, so this phase can land and sit
-indefinitely while the rest waits.
-
-1. **Site source in `site/`**, deployed as-is. No build step: it's a static page.
-   - `site/index.html` — the launcher
-   - `site/styles.css` — copy Bridge-Classroom's `docs/styles.css` (design
-     tokens). **Copy it, don't fetch it cross-domain.**
-   - `site/favicon.svg` — needs its own mark. Bridge-Classroom's green spade is
-     that product's identity; craftwork wants its own. Open question.
-2. **`wrangler.jsonc`** at the repo root:
+1. **`site/`** — static, no bundler.
+   - `site/index.html` — launcher
+   - `site/styles.css` — **copy** Bridge-Classroom's `docs/styles.css` (design
+     tokens); don't fetch cross-domain
+   - `site/favicon.svg` — needs its own mark (see open questions)
+2. **The apex is a Worker with Static Assets, not a Pages project.** It has to
+   serve the site *and* route tool paths, which a Pages project can't do.
+   Bridge-Classroom already uses this product (`wrangler.jsonc`,
+   `assets.directory`) — copy that shape.
    ```jsonc
    {
      "name": "bridge-craftwork-site",
      "compatibility_date": "2026-08-31",
-     "pages_build_output_dir": "site"
+     "main": "src/index.js",
+     "assets": { "directory": "./site", "binding": "ASSETS" }
    }
    ```
-3. **`.github/workflows/pages.yml`** — copy the shape from `pbn-to-pdf`'s
-   (`wrangler-action` → `pages deploy`), minus the wasm build steps. Needs repo
-   secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
-   - Account ID is `13691335358be0d5da6e79540083d975` (documented as
-     non-credential in `bridge-solver/wrangler.jsonc`).
-4. **Tiles pointing at the tools' CURRENT URLs.** Deliberate: the launcher goes
-   live and is useful before any tool URL moves. Phase 2 then repoints tiles one
-   at a time, and a mistake is a one-line revert instead of a dead link.
-5. **Attach the apex**: `bridge-craftwork.com` + `www` as Pages custom domains.
-   Cloudflare's CNAME flattening handles the apex.
+3. **`.github/workflows/deploy.yml`** — `wrangler deploy` via
+   `cloudflare/wrangler-action`. Needs `CLOUDFLARE_API_TOKEN` and
+   `CLOUDFLARE_ACCOUNT_ID`. Account: `13691335358be0d5da6e79540083d975`
+   (documented as non-credential in `bridge-solver/wrangler.jsonc`).
+4. **Tiles point at the tools' CURRENT URLs.** Deliberate: the site is live and
+   useful before any tool moves, and Phase 2 repoints one tile at a time.
+5. **Attach `bridge-craftwork.com` + `www`** as custom domains. Cloudflare's
+   CNAME flattening handles the apex.
 
 ### Tile inventory
 
-| Tile | One-liner | Try | Download |
-| --- | --- | --- | --- |
-| **PBN to PDF** | Turn a PBN file into printable hand diagrams, declarer's-plan worksheets and bidding sheets. | live | `pbn-to-pdf/releases/latest` |
-| **PDF Handouts** | Merge PDFs and screenshots into a handout with custom headers and footers. | live | `pdf-handouts/releases/latest` |
-| **dealer3** | Rust rebuild of the classic `dealer.exe` hand generator — runs its scripts, accepts its command line. | needs domain | `dealer3/releases/latest` |
-| **bridge-solver** | Fast double-dummy solver with par scoring, cardplay analysis and PBN processing. | needs domain | `bridge-solver/releases/latest` |
-| bridge-rulebot | Deterministic rule-based cardplay bot with teachable reason codes. | **no web UI** | no releases |
+| Tile | One-liner | Download |
+| --- | --- | --- |
+| **PBN to PDF** | Turn a PBN file into printable hand diagrams, declarer's-plan worksheets and bidding sheets. | `pbn-to-pdf/releases/latest` |
+| **PDF Handouts** | Merge PDFs and screenshots into a handout with custom headers and footers. | `pdf-handouts/releases/latest` |
+| **dealer3** | Rust rebuild of the classic `dealer.exe` hand generator — runs its scripts, accepts its command line. | `dealer3/releases/latest` |
+| **bridge-solver** | Fast double-dummy solver with par scoring, cardplay analysis and PBN processing. | `bridge-solver/releases/latest` |
+| bridge-rulebot | Deterministic rule-based cardplay bot with teachable reason codes. | **no web UI, no releases** |
 
 Point every Download at **`/releases/latest`**, never a pinned tag — the link
-then never goes stale without a rebuild.
-
-`bridge-rulebot` has a wasm crate but no browser front-end and no releases. Omit
-it, or give it a "source only" tile. Don't fake a Try button.
+then never goes stale without a rebuild. `bridge-rulebot` gets a source-only
+tile or none; don't fake a Try button.
 
 ---
 
-## Phase 2 — Attach the subdomains *(outward-facing)*
+## Phase 2 — Mount the tools on paths *(outward-facing)*
 
-One tool at a time. After each: load the new host, then repoint that tile.
+One tool at a time; after each, load it and repoint that tile.
 
-**Gotcha, and it contradicts the obvious guess:** Pages custom domains are
-**dashboard/API state, not `wrangler.jsonc` config** — wrangler will not create
-them from the file. `pbn-to-pdf/wrangler.jsonc` says so explicitly in a comment.
-So each attachment is two steps:
+**The router.** `src/index.js` in this repo: static assets for everything else,
+and for a known tool prefix, proxy to that tool's `pages.dev` with the prefix
+stripped.
 
-```sh
-# 1. attach the domain to the Pages project
-curl -X POST "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/pages/projects/$PROJECT/domains" \
-     -H "Authorization: Bearer $CF_TOKEN" -H "Content-Type: application/json" \
-     --data '{"name":"pbn-to-pdf.bridge-craftwork.com"}'
-# 2. DNS: CNAME <host> -> <project>.pages.dev, proxied
+```js
+const TOOLS = {
+  '/pbn-to-pdf':    'https://pbn-to-pdf.pages.dev',
+  '/dealer3':       'https://dealer3.pages.dev',
+  '/pdf-handouts':  'https://pdf-handouts.pages.dev',
+  '/bridge-solver': 'https://bridge-solver.pages.dev',
+}
 ```
 
-Then record the hostname in that repo's `wrangler.jsonc` header comment, the way
-`pbn-to-pdf` already does — the config file is where someone will look.
+Strip the prefix rather than nesting each tool's build output: `pages.dev` keeps
+serving from its root, so each repo's `_headers` path rules (`/assets/*`,
+`/index.html`) keep working untouched. **Preserve the origin's headers** —
+construct the response so `_headers` survives the hop, or dealer3's COOP/COEP
+and every `Cache-Control` rule silently vanish.
 
-Order: `pbn-to-pdf` first (proves the pattern on a project that already has a
-working custom domain), then `dealer3`, then `bridge-solver`
-(on `bridge-solver.`, per the hostname convention above).
+Redirect `/tool` → `/tool/` so relative asset URLs resolve against the right
+base. This is the one thing that will break first if missed.
 
-`bridge-solver` carries Pages Functions, a KV namespace and an Analytics Engine
-binding. Adding a custom domain doesn't touch those, but its `/t` beacon and
-`/api/stats` should be re-checked on the new host before the old one goes.
+Per tool, in order — `pbn-to-pdf`, `dealer3`, `pdf-handouts`, `bridge-solver`:
+
+1. Confirm the Pages project's `pages.dev` serves it.
+2. Add the prefix to `TOOLS`, deploy, load `bridge-craftwork.com/<tool>/`.
+3. Exercise it for real — render a PDF, generate a deal. A page that loads is
+   not a page that works; the wasm fetch is the part that fails quietly.
+4. Repoint that tile.
+
+`bridge-solver` last: it carries Pages Functions (`/t` beacon, `/api/stats`), a
+KV namespace and an Analytics Engine binding. Those must be re-checked through
+the proxy — a Function that works on `pages.dev` can still break behind it.
 
 ---
 
 ## Phase 3 — Move pdf-handouts off GitHub Pages
 
-The only tool on a different hosting product, and the smallest migration of the
-four: no Vite, no bundler. `pages.yml` runs `wasm-pack` and uploads `web/`
-straight to GitHub Pages.
+The only tool on a different hosting product, and the smallest migration: no
+Vite, no bundler — `pages.yml` runs `wasm-pack` and uploads `web/` directly.
 
 1. Add `wrangler.jsonc` with `"pages_build_output_dir": "web"`.
 2. Replace the `upload-pages-artifact` + `deploy` jobs with a
    `wrangler pages deploy` step (copy from `dealer3`).
-3. Attach `pdf-handouts.bridge-craftwork.com`.
-4. Leave a redirect stub at `bridge-craftwork.github.io/pdf-handouts/` — a
-   `<meta http-equiv="refresh">` plus a `<link rel="canonical">`. The README
-   links that URL, and so may other people.
+3. Leave a redirect stub at `bridge-craftwork.github.io/pdf-handouts/` — a
+   `<meta http-equiv="refresh">` plus `<link rel="canonical">`. The README links
+   it, and so may other people.
+
+Its HTML is hand-written with relative URLs (`href="style.css"`, `src="app.js"`)
+so it mounts on a path unchanged — but it has no build step to catch a mistake,
+so check the wasm actually loads rather than assuming.
 
 ---
 
 ## Phase 4 — Retire the old URLs *(don't just delete them)*
 
 **`pbn-to-pdf.bridge-classroom.org` is live AND linked from the
-bridge-classroom.com/.org hub** (shipped 2026-08-31, PR #411). It must not
-404.
+bridge-classroom hub** (shipped 2026-08-31, PR #411). It must not 404.
 
-- **Minimum, zero risk:** leave it attached to the Pages project as a second
-  custom domain. Pages serves the same site from both hosts. Nothing breaks;
-  the URL is just no longer canonical.
+- **Minimum, zero risk:** leave the custom domain attached; Pages serves the
+  same site from both hosts. Nothing breaks, it's just no longer canonical.
 - **Better:** a Cloudflare **Redirect Rule** on the `bridge-classroom.org` zone
-  — `pbn-to-pdf.bridge-classroom.org/*` → `https://pbn-to-pdf.bridge-craftwork.com/$1`,
-  301. Do this only after the new host is confirmed serving. (Pages `_redirects`
-  is the wrong tool here — it is path-based; cross-host belongs in a zone rule.)
+  — `pbn-to-pdf.bridge-classroom.org/*` →
+  `https://bridge-craftwork.com/pbn-to-pdf/$1`, 301 — once the new path is
+  confirmed working. This is also what closes the reputation-isolation gap.
+  (Pages `_redirects` is the wrong tool: it's path-based; cross-host belongs in
+  a zone rule.)
 
 ---
 
-## Phase 5 — Repoint Bridge-Classroom and the docs
+## Phase 5 — Documentation
+
+The reason this is a site and not just a launcher. Four CLIs with real releases
+and no documentation between them; each repo's README is the only reference.
+
+Per tool at `/docs/<tool>/`: what it does, install (per platform, from the
+release assets), the common invocations, and how the browser build differs from
+the CLI. Source the first draft from each repo's README rather than writing
+fresh — `pbn-to-pdf`'s in particular already has a full options table and worked
+examples.
+
+Open: whether the **services** get documented here too. `solver.`, `ben.`,
+`dealer.` and `tables.` are real public HTTP APIs with no public documentation
+anywhere. Genuinely useful, and this is the only sensible home — but it is
+scope beyond the four browser tools, so decide deliberately rather than letting
+it creep.
+
+---
+
+## Phase 6 — Repoint Bridge-Classroom and the docs
 
 1. **The hub tile** — `docs/index.html` in `bridge-craftwork/Bridge-Classroom`,
-   the `PBN to PDF` tile added by PR #411. Change the `href` to the new host.
-   While there, reconsider its placement: a general-purpose converter under
-   "Teacher Tools" was always a stretch. Options: leave it, or replace the four
-   tool tiles with **one** tile pointing at `bridge-craftwork.com` — which is
-   arguably the whole point of building this launcher.
-2. **Cross-link back**: the craftwork launcher should point at
-   bridge-classroom.com for the teaching product, so the two sites frame each
-   other rather than competing.
+   added by PR #411. Repoint the `href`. Then decide: leave it, or replace the
+   tool tiles with **one** tile pointing at `bridge-craftwork.com` — arguably
+   the whole point of building the launcher.
+2. **Cross-link back** to bridge-classroom.com for the teaching product, so the
+   two sites frame each other rather than compete.
 3. **`Bridge-Classroom/CLAUDE.md`** — its services table lists every
-   `bridge-craftwork.com` host. Add the new tool subdomains, clearly separated
-   from the backend services (a browser build and an HTTP API on adjacent
-   hostnames will otherwise be confused).
+   `bridge-craftwork.com` host. Add the tool **paths**, clearly separated from
+   the service **subdomains**, and state the rule: subdomains are machines,
+   paths are pages.
 4. **`bridge-craftwork-platform`** (private) — `edge/Caddyfile` fronts the
-   service hosts. The tool subdomains are Cloudflare Pages and **do not** pass
-   through Caddy or touch the droplet. Note that explicitly, or someone will go
+   service hosts. The tool paths are Cloudflare Workers/Pages and **never** pass
+   through Caddy or touch the droplet. Say so explicitly, or someone will go
    looking for a stanza that was never there.
 
 ---
 
 ## Open questions
 
-1. **Favicon / visual identity.** Reusing the classroom's green spade would
-   blur two products that are deliberately being separated.
-2. **Repo licence.** `pbn-to-pdf` and `dealer3` are Unlicense. This repo has no
-   `LICENSE` yet.
-3. **Does the launcher describe the services too?** `solver.`, `ben.`, `dealer.`
-   and `tables.` are real public HTTP APIs with no documentation page anywhere.
-   A "Services" section would be genuinely useful — but it is scope beyond the
-   four browser tools, so decide before it creeps in.
-4. **`www` or bare apex** as canonical, and a redirect from the other.
+1. **Favicon / visual identity.** Reusing the classroom's green spade would blur
+   two products that are deliberately being separated.
+2. **Repo licence.** `pbn-to-pdf` and `dealer3` are Unlicense; this repo has none.
+3. **Do the services get documented here?** (Phase 5.)
+4. **`www` or bare apex** as canonical, with a redirect from the other.
 
 ---
 
 ## Acceptance checks
 
-- [ ] `curl -sI https://bridge-craftwork.com` → 200 (currently: no apex DNS record at all)
-- [ ] Every tile's **Try** link loads the tool and renders a real output file
-- [ ] Every **Download** link resolves to a release with platform assets attached
-- [ ] `pbn-to-pdf.bridge-classroom.org` still resolves (200 or 301 — never 404)
-- [ ] The bridge-classroom hub tile points at the new host and is not dead
+- [ ] `curl -sI https://bridge-craftwork.com` → 200 *(today: no apex DNS record)*
+- [ ] Each `/<tool>/` loads **and produces a real output file** — not just renders
+- [ ] `/<tool>` (no trailing slash) redirects to `/<tool>/`
+- [ ] dealer3 still reports cross-origin isolation (`crossOriginIsolated === true`)
+- [ ] Every Download link resolves to a release with platform assets
+- [ ] `pbn-to-pdf.bridge-classroom.org` still resolves — 200 or 301, never 404
 - [ ] `bridge-craftwork.github.io/pdf-handouts/` still resolves
-- [ ] bridge-solver's `/api/stats` works on the new host
+- [ ] bridge-solver's `/api/stats` works through the proxy
 - [ ] `solver.` and `dealer.` still answer — untouched, and NOT repurposed
+- [ ] The bridge-classroom hub tile points somewhere live
 
 ---
 
@@ -278,4 +304,5 @@ bridge-classroom.com/.org hub** (shipped 2026-08-31, PR #411). It must not
 - Local checkouts: `/Users/rick/Development/GitHub/{pbn-to-pdf,dealer3,pdf-handouts,bridge-solver}`
 - Design tokens to copy: `Bridge-Classroom/docs/styles.css`
 - Tile markup worth reading first: `Bridge-Classroom/docs/index.html` — the
-  260px tile, `.thumb` mock-preview convention, and `tag-*` pills
+  260px tile, the `.thumb` mock-preview convention, and the `tag-*` pills
+- Worker-with-static-assets precedent: `Bridge-Classroom/wrangler.jsonc`
