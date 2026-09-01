@@ -90,9 +90,20 @@ boundary.
 | --- | --- | --- | --- |
 | pbn-to-pdf | `pbn-to-pdf.bridge-classroom.org` | Cloudflare Pages | v0.18.0, 5 assets |
 | pdf-handouts | `bridge-craftwork.github.io/pdf-handouts/` | **GitHub Pages** | v1.0.0, 4 assets |
-| dealer3 | *(built, no custom domain)* | Cloudflare Pages | v1.0.0, 8 assets |
-| bridge-solver | *(built, no custom domain)* | Cloudflare Pages + Functions | v1.0.0, 12 assets |
+| dealer3 | **`dealer.bridge-classroom.org`** | Cloudflare Pages | v1.0.0, 8 assets |
+| bridge-solver | **`solver.bridge-classroom.org`** | Cloudflare Pages + Functions | v1.0.0, 12 assets |
 | bridge-rulebot | *(wasm crate, no web UI)* | — | none |
+
+> **Corrected 2026-09-01.** This table said dealer3 and bridge-solver had no
+> custom domain. Both do, and both are live — listed on their Pages projects and
+> serving. So **three** tools sit on `bridge-classroom.org`, not one, and the
+> reputation-isolation gap is three times what Phase 4 was written for.
+>
+> Worse than the count: `dealer.` and `solver.` are the **same labels as the
+> live droplet APIs** `dealer.bridge-craftwork.com` and
+> `solver.bridge-craftwork.com`. A static wasm page and a production API now
+> differ only by domain. That is the exact confusion "subdomains are machines,
+> paths are pages" exists to prevent — and it is already here, one domain over.
 
 ## Target state
 
@@ -256,13 +267,31 @@ so check the wasm actually loads rather than assuming.
 
 ## Phase 4 — Retire the old URLs *(don't just delete them)*
 
-**`pbn-to-pdf.bridge-classroom.org` is live AND linked from the
-bridge-classroom hub** (shipped 2026-08-31, PR #411). It must not 404.
+**Three hosts, not one.** pbn-to-pdf was never a special case — the current-state
+table above simply recorded dealer3 and bridge-solver wrongly. All three are
+live on `bridge-classroom.org`, all three are linked from the hub, and none of
+them may 404:
 
-**State on 2026-09-01: the zero-risk half is already in effect.** The custom
-domain is still attached, so Pages serves the identical build from both hosts —
-verified byte-for-byte, same asset hash. Nothing is broken; the old host is
-simply no longer canonical.
+| Old host | Redirects to |
+| --- | --- |
+| `pbn-to-pdf.bridge-classroom.org` | `bridge-craftwork.com/pbn-to-pdf/` |
+| `dealer.bridge-classroom.org` | `bridge-craftwork.com/dealer3/` |
+| `solver.bridge-classroom.org` | `bridge-craftwork.com/bridge-solver/` |
+
+**State on 2026-09-01: the zero-risk half is already in effect** for all three.
+The custom domains are still attached, so Pages serves the identical build from
+both hosts — verified byte-for-byte on pbn-to-pdf, same asset hash. Nothing is
+broken; the old hosts are simply no longer canonical.
+
+### What still points at them
+
+- `Bridge-Classroom/docs/index.html` — three hub tiles, one per tool
+- `Bridge-Classroom/docs/ingest/index.html` — a link to `solver.`
+- `dealer3/web/src/components/PrintView.vue:124` —
+  `const siteUrl = 'https://dealer.bridge-classroom.org'`, **printed onto the
+  output**. That one argues the redirect must be permanent rather than
+  temporary: it is already on paper in people's hands, and a reprint is not a
+  redeploy.
 
 ### The rule to create *(blocked on credentials, not on work)*
 
@@ -275,13 +304,32 @@ Rules → Edit** on that zone.
 
 Rules → Redirect Rules → Create rule:
 
+One rule, three hosts — a single expression handles all of them:
+
 | Field | Value |
 | --- | --- |
-| If | `http.host eq "pbn-to-pdf.bridge-classroom.org"` |
+| If | `http.host in {"pbn-to-pdf.bridge-classroom.org" "dealer.bridge-classroom.org" "solver.bridge-classroom.org"}` |
 | Then | Dynamic redirect |
-| Target URL | `concat("https://bridge-craftwork.com/pbn-to-pdf", http.request.uri.path)` |
+| Target URL | see the expression below |
 | Preserve query string | on |
 | Status | 301 |
+
+```
+concat(
+  "https://bridge-craftwork.com",
+  lookup_json_string(
+    "{\"pbn-to-pdf.bridge-classroom.org\":\"/pbn-to-pdf\",
+      \"dealer.bridge-classroom.org\":\"/dealer3\",
+      \"solver.bridge-classroom.org\":\"/bridge-solver\"}",
+    http.host
+  ),
+  http.request.uri.path
+)
+```
+
+If `lookup_json_string` is awkward in the dashboard, three separate rules with
+`http.host eq "..."` and a plain `concat("https://bridge-craftwork.com/<path>",
+http.request.uri.path)` are equivalent and easier to read.
 
 `concat` rather than a static target so the path survives: `/` becomes
 `/pbn-to-pdf/`, and `/assets/x.js` becomes `/pbn-to-pdf/assets/x.js`.
