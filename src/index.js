@@ -48,9 +48,22 @@ const TOOLS = {
     needsVersion: true,
     name: (p, v) => `pdf-handouts-${v}-${p}${p.startsWith('linux') ? '.tar.gz' : '.zip'}`,
   },
+
+  // The `rbb` CLI. `needsRelease`: its only release so far (v0.1.0-rc1) is a
+  // pre-release, which GitHub's `releases/latest` skips — `latest/download/…`
+  // is a 404 and `releases/latest` itself bounces to the release list. So
+  // before building the asset name, confirm a full release exists (the same
+  // cached lookup pdf-handouts uses); if none does, hand over the release list,
+  // where the pre-release's assets are. Once a full release exists this is one
+  // cached lookup per hour and the download is direct. The flag can go then,
+  // or stay: it costs nothing and covers a repo with only pre-releases.
+  'rusty-bidding-bot': {
+    needsRelease: true,
+    name: (p) => `rbb-${p}${p.startsWith('windows') ? '.exe.zip' : '.tar.gz'}`,
+  },
 }
 
-// The platform triples every one of the four repos builds. Asset names embed
+// The platform triples every one of the tool repos builds. Asset names embed
 // exactly these, which is what makes the match reliable rather than a guess.
 const PLATFORMS = new Set([
   'linux-x86_64',
@@ -135,8 +148,9 @@ async function download(request, url, ctx) {
   if (!platform) return Response.redirect(releasePage, 302)
 
   let version = null
-  if (spec.needsVersion) {
+  if (spec.needsVersion || spec.needsRelease) {
     const tag = await latestTag(tool, ctx)
+    // No full release: GitHub's /releases/latest lands on the release list.
     if (!tag) return Response.redirect(releasePage, 302)
     version = tag.replace(/^v/, '')
   }
@@ -156,6 +170,7 @@ const TOOL_ORIGINS = {
   '/dealer3': 'https://dealer3.pages.dev',
   '/bridge-solver': 'https://bridge-solver.pages.dev',
   '/pdf-handouts': 'https://pdf-handouts.pages.dev',
+  '/rusty-bidding-bot': 'https://rusty-bidding-bot.pages.dev',
 }
 
 /** Exact segment match, so `/dealer3-notes` never routes to `/dealer3`. */

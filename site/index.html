@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bridge Craftwork &#183; Bridge tools for the browser and the command line</title>
 <link rel="canonical" href="https://bridge-craftwork.com/">
-<meta name="description" content="Free, open-source bridge tools. Convert PBN files to printable hand diagrams, generate deals, solve double-dummy, and build handouts &#8212; in your browser, or as a command-line program.">
+<meta name="description" content="Free, open-source bridge tools. Convert PBN files to printable hand diagrams, generate deals, solve double-dummy, bid deals with a rule-based engine, and build handouts &#8212; in your browser, or as a command-line program.">
 <meta name="author" content="Bridge Craftwork">
 <meta property="og:title" content="Bridge Craftwork">
 <meta property="og:description" content="Free, open-source bridge tools for the browser and the command line.">
@@ -116,6 +116,16 @@
 .ddt th,.ddt td{padding:2.5px 6px;text-align:center;border:0.5px solid #e8eaee;color:#333}
 .ddt th{background:#f0f1f4;color:#7a808a;font-weight:500}
 .ddt td.hi{background:var(--accent-soft);color:var(--accent-strong);font-weight:600}
+
+/* rusty-bidding-bot — a hand, and the auction the engine bids with it */
+.thumb-bid{background:#F4F5F7;display:flex;align-items:center;justify-content:center;gap:9px;font-size:8.5px}
+.bb-hand{background:#fff;border:0.5px solid #dcdee3;border-radius:2px;padding:5px 7px;line-height:1.4;color:#222}
+.bb-arrow{font-size:13px;color:#b0b5bd}
+.bb-auction{border-collapse:collapse;background:#fff;border:0.5px solid #dcdee3}
+.bb-auction th,.bb-auction td{padding:2.5px 5px;text-align:center;color:#333;font-weight:400}
+.bb-auction th{background:#f0f1f4;color:#7a808a;font-weight:500}
+.bb-auction td.hi{background:var(--accent-soft);color:var(--accent-strong);font-weight:600}
+.bb-auction td.hi::after{content:"!";font-size:7px;vertical-align:super;margin-left:1px}
 
 /* bridge-rulebot — cards played with their reason codes */
 .thumb-bot{background:#F4F5F7;padding:11px;display:flex;flex-direction:column;gap:5px;justify-content:center}
@@ -267,6 +277,37 @@
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/pdf-handouts">Source</a>
         </div>
         <div class="tile-alt"><span class="dl-plat" data-dl-label></span><a href="https://github.com/bridge-craftwork/pdf-handouts/releases/latest" target="_blank" rel="noopener">other platforms</a></div>
+      </div>
+    </article>
+
+    <!-- rusty-bidding-bot: only a pre-release so far (v0.1.0-rc1), hence the
+         amber version chip. Download CLI still goes through /download/, which
+         hands over the release list until a full release exists and the file
+         itself after (see needsRelease in src/index.js).
+         "Mostly offline": the engine and the convention cards ship with the page,
+         but Practice Bidding Scenarios boards are fetched from GitHub at run
+         time; random deals, dealer3 scripts and pasted deals need no network. -->
+    <article class="tile">
+      <div class="thumb thumb-bid mono">
+        <div class="bb-hand">&#9824; KQ75<br><span class="red">&#9829; A92</span><br><span class="red">&#9830; K84</span><br>&#9827; QJ3</div>
+        <div class="bb-arrow">&#8594;</div>
+        <table class="bb-auction">
+          <tr><th>N</th><th>E</th><th>S</th><th>W</th></tr>
+          <tr><td>1NT</td><td>Pass</td><td class="hi">2&#9827;</td><td>Pass</td></tr>
+          <tr><td>2&#9824;</td><td>Pass</td><td>4&#9824;</td><td>Pass</td></tr>
+          <tr><td>Pass</td><td>Pass</td><td></td><td></td></tr>
+        </table>
+      </div>
+      <div class="tile-body">
+        <div class="tile-name">rusty-bidding-bot</div>
+        <div class="tile-desc">Rule-based bidding engine that bids all four hands and shows why it made each call.</div>
+        <div class="tile-tags"><span class="tag tag-amber" title="Pre-release: no full release yet">v0.1.0-rc1</span><span class="tag tag-blue" title="Random deals, dealer3 scripts and your own deals work offline; Practice Bidding Scenarios boards are fetched from GitHub">Mostly offline</span></div>
+        <div class="tile-actions">
+          <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="rusty-bidding-bot" href="/rusty-bidding-bot/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" data-dl="rusty-bidding-bot" href="https://github.com/bridge-craftwork/rusty-bidding-bot/releases/latest">Download CLI</a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/rusty-bidding-bot">Source</a>
+        </div>
+        <div class="tile-alt"><span class="dl-plat" data-dl-label></span><a href="https://github.com/bridge-craftwork/rusty-bidding-bot/releases/latest" target="_blank" rel="noopener">other platforms</a></div>
       </div>
     </article>
 
