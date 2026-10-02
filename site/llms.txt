@@ -1,0 +1,30 @@
+# Bridge Craftwork
+
+> Free, open-source tools for contract bridge players and teachers, at
+> bridge-craftwork.com. Each tool runs in the browser at its own path, and
+> most are also command-line programs.
+
+Each tool below publishes a plain-text reference beside it, generated from the
+same source its page runs on, so it describes exactly what the tool accepts.
+Read it before writing input for the tool. A tool with no reference yet is not
+listed here.
+
+## Tools
+
+- [dealer3 language reference](https://bridge-craftwork.com/dealer3/reference.txt):
+  every statement, function and operator of the dealer script language, for
+  generating bridge deals. The tool: https://bridge-craftwork.com/dealer3/
+- [rusty-bidding-bot reference](https://bridge-craftwork.com/rusty-bidding-bot/reference.txt):
+  a rule-based engine that bids all four hands, its inputs, parameters and
+  window.rustyBiddingBot. The tool: https://bridge-craftwork.com/rusty-bidding-bot/
+- [Convention card reference](https://bridge-craftwork.com/card/reference.txt):
+  every field a convention card can hold, every convention it can name, and
+  window.card. The editor: https://bridge-craftwork.com/card/
+
+## Docs
+
+- [Convention card](https://bridge-craftwork.com/docs/card/): using the editor.
+
+## Source
+
+- [bridge-craftwork on GitHub](https://github.com/bridge-craftwork)
