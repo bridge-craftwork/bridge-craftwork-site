@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convention card &#183; Bridge Craftwork docs</title>
+<link rel="canonical" href="https://bridge-craftwork.com/docs/card/">
+<meta name="description" content="How to use the convention card editor: build a card, import BBO, bridgeodex and BBA cards, print the ACBL card, and keep your cards. Plus the card reference and window.card for programs.">
+<link rel="alternate" type="text/plain" href="/card/reference.txt" title="Card reference (plain text)">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/styles.css">
+<!--
+  The first page under /docs/. Static HTML, no hydration, so it reads the same
+  to a person, a crawler and an assistant (PLAN.md, Phase 5). The editor
+  itself is the convention-card repo, mounted at /card/; this page describes
+  it and links to the generated card reference there, which is the
+  authoritative list of fields.
+-->
+<style>
+:root{--accent:#475569;--accent-strong:#334155;--accent-soft:#EEF1F5}
+body{background:var(--color-background-tertiary)}
+.page{max-width:760px;margin:0 auto;padding:36px 20px 56px}
+.crumbs{font-size:14px;color:var(--color-text-tertiary);margin-bottom:18px}
+.crumbs a{color:var(--color-text-secondary);text-decoration:none}
+.crumbs a:hover{color:var(--color-text-primary)}
+.doc{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:28px 32px 32px}
+h1{font-size:26px;font-weight:500;margin-bottom:8px}
+.lede{font-size:17px;color:var(--color-text-secondary);line-height:1.55;margin-bottom:18px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.btn{font-size:14px;font-weight:500;padding:9px 14px;border-radius:var(--border-radius-md);text-decoration:none}
+.btn-main{background:var(--accent);color:#fff}
+.btn-main:hover{background:var(--accent-strong)}
+.btn-ghost{color:var(--accent-strong);border:1px solid var(--color-border-secondary)}
+.btn-ghost:hover{border-color:var(--accent)}
+h2{font-size:19px;font-weight:500;margin:30px 0 10px;padding-top:18px;border-top:0.5px solid var(--color-border-tertiary)}
+h3{font-size:16px;font-weight:600;margin:18px 0 6px}
+p,li{font-size:15.5px;line-height:1.65;color:var(--color-text-primary)}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 12px 22px}
+li{margin-bottom:4px}
+a{color:var(--accent-strong)}
+code{font-family:var(--font-mono);font-size:13.5px;background:var(--color-background-secondary);padding:1px 5px;border-radius:4px}
+pre{font-family:var(--font-mono);font-size:13px;background:#2C3440;color:#dbe3ee;padding:12px 14px;border-radius:var(--border-radius-md);overflow-x:auto;margin:0 0 14px;line-height:1.55}
+pre code{background:none;padding:0;font-size:inherit}
+table{border-collapse:collapse;width:100%;margin:0 0 14px;font-size:14.5px}
+th,td{text-align:left;padding:7px 9px;border-bottom:0.5px solid var(--color-border-tertiary);vertical-align:top;line-height:1.5}
+th{font-weight:600;color:var(--color-text-secondary)}
+.note{background:var(--color-background-warning);color:var(--color-text-warning);border-radius:var(--border-radius-md);padding:10px 14px;font-size:15px;line-height:1.55;margin:0 0 14px}
+.foot{font-size:13px;color:var(--color-text-tertiary);text-align:center;margin-top:22px}
+.foot a{color:var(--color-text-secondary)}
+@media (max-width:600px){.doc{padding:20px 16px 24px}.page{padding:24px 12px 40px}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="crumbs"><a href="/">Bridge Craftwork</a> &#8250; Docs &#8250; Convention card</div>
+
+<main class="doc">
+
+<h1>Convention card</h1>
+<p class="lede">Build and edit your partnership&#8217;s convention card in the browser. Import a card from
+BBO, bridgeodex or BBA, then print it on the ACBL card. You don&#8217;t need an account, and your cards
+stay on your own computer.</p>
+<div class="actions">
+  <a class="btn btn-main" href="/card/">Open the editor</a>
+  <a class="btn btn-ghost" href="/card/reference.txt">Card reference (plain text)</a>
+  <a class="btn btn-ghost" href="https://github.com/bridge-craftwork/convention-card">Source</a>
+</div>
+
+<h2>Getting started</h2>
+<ol>
+  <li><a href="/card/">Open the editor</a>. It starts with a sample card, <strong>2/1 Intermediate</strong>.
+    The sample can&#8217;t be changed, so it&#8217;s always there to start from.</li>
+  <li>Click <strong>Duplicate</strong> to make your own copy, or <strong>New</strong> for a blank card,
+    or <strong>Import</strong> to bring in a card you already have (below).</li>
+  <li>Click <strong>Edit</strong>. Pick a section on the left (notrump openings, slam bidding, carding
+    and so on) and tick the conventions you play. Each section also has room for notes.</li>
+  <li>Click <strong>Save</strong>.</li>
+</ol>
+<p>The level buttons at the top (Basic, Intermediate, Advanced, Expert) set how far up the list goes.
+Basic shows only the most common conventions, and Expert shows all of them. A convention you have
+ticked is always listed, whatever the level.</p>
+
+<h2>Where your cards are kept</h2>
+<p>Your cards are saved <strong>in this browser, on this computer</strong>. There is no account and
+nothing is uploaded. That also means:</p>
+<ul>
+  <li>Another browser, or another computer, won&#8217;t see them.</li>
+  <li>Clearing your browser&#8217;s data (history, cookies and site data) deletes them.</li>
+</ul>
+<p class="note">To keep a copy, use <strong>Export Content</strong> &#8594; <strong>Bridge Classroom
+JSON</strong> and save the file somewhere safe. <strong>Import</strong> reads it back exactly.</p>
+<p>To keep a card with an account, click <strong>Save to Bridge Classroom</strong>. It opens
+<a href="https://bridge-classroom.com">Bridge Classroom</a> with your card, and Bridge Classroom saves
+it there once you sign in.</p>
+
+<h2>Importing a card</h2>
+<p>Click <strong>Import</strong> and choose the file. The editor works out what kind of file it is.</p>
+<table>
+  <tr><th>Where it came from</th><th>The file</th></tr>
+  <tr><td>This editor, or Bridge Classroom</td><td>The <code>.json</code> from Export Content</td></tr>
+  <tr><td>A PDF this editor printed</td><td>The <code>.pdf</code>. The card is stored inside the PDF, so it comes back complete.</td></tr>
+  <tr><td>BBO</td><td>The convention card&#8217;s JSON export</td></tr>
+  <tr><td>bridgeodex</td><td>The card&#8217;s JSON export</td></tr>
+  <tr><td>BBA (Bridge Bidding Analyser)</td><td>The <code>.bbsa</code> convention file</td></tr>
+</table>
+<p>If you already have a card with the same name, the editor asks whether to replace it or keep
+both.</p>
+
+<h2>Printing and exporting</h2>
+<ul>
+  <li><strong>Export PDF</strong>: the <strong>ACBL Classic</strong> card most clubs use, or the redesigned
+    <strong>ACBL New</strong> card, filled in and ready to print. The PDF also stores your card, so you
+    can import it again later.</li>
+  <li><strong>Export Content</strong>: the editor&#8217;s own <strong>JSON</strong> (your backup), or a BBA
+    <strong><code>.bbsa</code></strong> file to load into Bridge Bidding Analyser. A <code>.bbsa</code> you
+    imported exports with its settings intact, including ones the card has no box for.</li>
+</ul>
+
+<h2>Sending a card by link</h2>
+<p>A link can carry a whole card. When someone opens it, the card is added to the cards in their
+browser and opened. The card is in the part of the address after <code>#</code>, which browsers never
+send to a server.</p>
+<pre><code>https://bridge-craftwork.com/card/#import=v1.&#8230;</code></pre>
+<p>Other tools use these links to hand a card over. For example, the
+<a href="https://github.com/bridge-craftwork/Better-BBO-Convention-Card">Better BBO Convention Card</a>
+browser extension will use one to open a BBO card here.</p>
+
+<h2>For programs and assistants</h2>
+<p><a href="/card/reference.txt"><code>/card/reference.txt</code></a> lists every field a card can hold
+(its path, values, default and older names), every convention (its ID, level and a short summary) and
+the program interface below. It is plain text, generated from the same spec the editor reads. If a
+field isn&#8217;t in it, it isn&#8217;t a card field. <a href="/card/llms.txt"><code>/card/llms.txt</code></a>
+is a short index.</p>
+
+<h3>window.card</h3>
+<p>The editor page provides the interface every Bridge Craftwork tool shares. Methods return promises,
+except <code>getInput</code>.</p>
+<table>
+  <tr><th>Method</th><th>What it does</th></tr>
+  <tr><td><code>run(input, params)</code></td><td>Reads a card and converts it to <code>params.to</code>. Returns <code>{ ok, from, name, output, diagnostics }</code>.</td></tr>
+  <tr><td><code>validate(input, params)</code></td><td>Reads and checks a card without converting it.</td></tr>
+  <tr><td><code>getInput()</code></td><td>The card open in the editor, unsaved edits included.</td></tr>
+  <tr><td><code>setInput(input, params)</code></td><td>Adds a card to the browser&#8217;s cards and opens it.</td></tr>
+  <tr><td><code>getOutput(params)</code></td><td>The open card, converted to <code>params.to</code>.</td></tr>
+</table>
+<p><code>input</code> can be any format Import reads: JSON as an object or text, <code>.bbsa</code>
+text, a PDF&#8217;s bytes, or an <code>#import=</code> link. <code>params.to</code> is one of
+<code>card</code> (the export JSON), <code>card_data</code>, <code>bbsa</code>, <code>pdf-classic</code>,
+<code>pdf-new</code>, <code>pdf-drawn</code>, <code>link</code> or <code>bridge-classroom</code>. Each
+diagnostic is <code>{ severity, message, path, hint }</code>, where <code>path</code> names the field
+it is about.</p>
+<pre><code>const r = await window.card.run(bbsaText, { name: 'Our card', to: 'pdf-classic' })
+if (!r.ok) console.log(r.diagnostics)</code></pre>
+
+<h3>The library</h3>
+<p>The converters, the PDF export and the card check are a plain JavaScript library with no framework
+and no network access. It runs in a page, a browser extension or Node. There is also a Rust crate.
+Both live in <a href="https://github.com/bridge-craftwork/convention-card">bridge-craftwork/convention-card</a>.
+Depend on the repository at a tagged version, since there are no npm or crates.io packages.</p>
+
+</main>
+
+<p class="foot"><a href="/">Bridge Craftwork</a> &#183; free &amp; open source &#183;
+<a href="https://github.com/bridge-craftwork/convention-card">source</a></p>
+
+</div>
+</body>
+</html>

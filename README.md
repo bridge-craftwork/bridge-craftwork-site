@@ -26,6 +26,7 @@ bridge-craftwork.com/dealer3/        → dealer3.pages.dev
 bridge-craftwork.com/pdf-handouts/   → pdf-handouts.pages.dev
 bridge-craftwork.com/bridge-solver/  → bridge-solver.pages.dev
 bridge-craftwork.com/rusty-bidding-bot/ → rusty-bidding-bot.pages.dev
+bridge-craftwork.com/card/           → convention-card.pages.dev
 bridge-craftwork.com/docs/<tool>/    → documentation (this repo)
 ```
 

@@ -171,6 +171,9 @@ const TOOL_ORIGINS = {
   '/bridge-solver': 'https://bridge-solver.pages.dev',
   '/pdf-handouts': 'https://pdf-handouts.pages.dev',
   '/rusty-bidding-bot': 'https://rusty-bidding-bot.pages.dev',
+  // The convention card editor. Named for what it is rather than its repo
+  // (convention-card), and no TOOLS entry above: it has no CLI release.
+  '/card': 'https://convention-card.pages.dev',
 }
 
 /** Exact segment match, so `/dealer3-notes` never routes to `/dealer3`. */
