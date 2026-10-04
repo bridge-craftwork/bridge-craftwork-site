@@ -506,7 +506,7 @@ four browser tools only, and says nothing about `solver.`, `ben.`, `dealer.` or
 ## Reference
 
 - Cloudflare account: `13691335358be0d5da6e79540083d975`
-- Local checkouts: `/Users/rick/Development/GitHub/{pbn-to-pdf,dealer3,pdf-handouts,bridge-solver}`
+- Local checkouts: `/Volumes/Express2T/Development/GitHub/{pbn-to-pdf,dealer3,pdf-handouts,bridge-solver}`
 - Design tokens to copy: `Bridge-Classroom/docs/styles.css`
 - Tile markup worth reading first: `Bridge-Classroom/docs/index.html` — the
   260px tile, the `.thumb` mock-preview convention, and the `tag-*` pills

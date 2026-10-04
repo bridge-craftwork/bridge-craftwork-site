@@ -75,6 +75,6 @@ Unlicense (public domain), matching `pbn-to-pdf` and `dealer3`.
 
 ## Sibling checkouts
 
-`/Users/rick/Development/GitHub/` — `pbn-to-pdf`, `dealer3`, `pdf-handouts`,
+`/Volumes/Express2T/Development/GitHub/` — `pbn-to-pdf`, `dealer3`, `pdf-handouts`,
 `bridge-solver`, `bridge-rulebot`, `Bridge-Classroom`,
 `bridge-craftwork-platform`.
