@@ -174,6 +174,9 @@ const TOOL_ORIGINS = {
   // The convention card editor. Named for what it is rather than its repo
   // (convention-card), and no TOOLS entry above: it has no CLI release.
   '/card': 'https://convention-card.pages.dev',
+  // Nelson Ford's CardShark BidBase rules on the bidbase port's engine; no
+  // TOOLS entry above: it has no CLI release.
+  '/bidbase': 'https://bidbase.pages.dev',
 }
 
 /** Exact segment match, so `/dealer3-notes` never routes to `/dealer3`. */
