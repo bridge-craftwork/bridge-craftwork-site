@@ -129,6 +129,16 @@
 .bb-auction td.hi::after{content:"!";font-size:7px;vertical-align:super;margin-left:1px}
 
 /* convention-card — a corner of the ACBL card, filled in */
+/* BidBase: Nelson Ford's practice screen in miniature (green table, yellow
+   bid box, light-green auction grid), as his VB6 program draws it. */
+.thumb-bbase{background:#1E9E3A;display:flex;align-items:center;justify-content:center;gap:10px;font-size:8.5px;font-weight:600}
+.bbs-box,.bbs-auc{border-collapse:collapse}
+.bbs-box td{background:#FFFF00;border:0.5px solid #00A000;padding:2px 4px;text-align:center;color:#111}
+.bbs-auc th,.bbs-auc td{border:0.5px solid #fff;padding:2px 6px;text-align:center;color:#111;min-width:14px}
+.bbs-box td.red{color:var(--suit-red)}
+.bbs-auc th{background:#F0F0F0}
+.bbs-auc td{background:#80FF80}
+.bbs-auc td.hi{background:#fff;color:var(--accent-strong)}
 .thumb-card{background:#F4F5F7;padding:9px 10px}
 .cc-sheet{background:#fff;border:0.5px solid #dcdee3;border-radius:2px;height:100%;padding:6px 8px;display:flex;flex-direction:column;gap:3.5px;font-size:8px;color:#333}
 .cc-head{font-size:7px;color:#8a8f98;letter-spacing:0.06em;border-bottom:0.5px solid #e6e8ec;padding-bottom:2px}
@@ -317,6 +327,38 @@
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/rusty-bidding-bot">Source</a>
         </div>
         <div class="tile-alt"><span class="dl-plat" data-dl-label></span><a href="https://github.com/bridge-craftwork/rusty-bidding-bot/releases/latest" target="_blank" rel="noopener">other platforms</a></div>
+      </div>
+    </article>
+
+    <!-- BidBase: Nelson Ford's CardShark BidBase rules on the bidbase port's
+         engine, and his Bidding Practice program ported from VB6 at
+         /bidbase/practice/. No CLI release yet, so no Download button and
+         no TOOLS entry in src/index.js. Native practice builds are workflow
+         artifacts in the bidbase repo until a practice-v* release exists. -->
+    <article class="tile">
+      <div class="thumb thumb-bbase mono">
+        <table class="bbs-box">
+          <tr><td>1&#9827;</td><td class="red">1&#9830;</td><td class="red">1&#9829;</td><td>1&#9824;</td><td>1N</td></tr>
+          <tr><td>2&#9827;</td><td class="red">2&#9830;</td><td class="red">2&#9829;</td><td>2&#9824;</td><td>2N</td></tr>
+          <tr><td>3&#9827;</td><td class="red">3&#9830;</td><td class="red">3&#9829;</td><td>3&#9824;</td><td>3N</td></tr>
+          <tr><td>Pass</td><td>Dbl</td><td>Rdbl</td><td colspan="2">BID BOX</td></tr>
+        </table>
+        <table class="bbs-auc">
+          <tr><th>S</th><th>W</th><th>N</th><th>E</th></tr>
+          <tr><td>1&#9827;</td><td>P</td><td>1&#9824;</td><td>P</td></tr>
+          <tr><td>1N</td><td>P</td><td class="hi">3N</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+        </table>
+      </div>
+      <div class="tile-body">
+        <div class="tile-name">BidBase</div>
+        <div class="tile-desc">Nelson Ford&#8217;s CardShark BidBase: 16,000 bidding rules, with his Bidding Practice program ported from Visual Basic.</div>
+        <div class="tile-tags"><span class="tag tag-amber" title="No release yet">No release yet</span><span class="tag tag-blue">Runs offline</span></div>
+        <div class="tile-actions">
+          <a class="tbtn tbtn-try" target="_blank" rel="noopener" href="/bidbase/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="/bidbase/practice/">Practice</a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/bidbase">Source</a>
+        </div>
       </div>
     </article>
 
