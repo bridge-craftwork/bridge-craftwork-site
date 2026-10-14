@@ -61,6 +61,13 @@ const TOOLS = {
     needsRelease: true,
     name: (p) => `rbb-${p}${p.startsWith('windows') ? '.exe.zip' : '.tar.gz'}`,
   },
+
+  // BidBase: the desktop app (Nelson Ford's Bidding Practice program, ported
+  // from VB6), not a CLI. Releases are tagged practice-v*; Windows and macOS
+  // come as .zip (the Mac one a signed, notarized .app), Linux as .tar.gz.
+  bidbase: {
+    name: (p) => `bidbase-practice-${p}${p.startsWith('linux') ? '.tar.gz' : '.zip'}`,
+  },
 }
 
 // The platform triples every one of the tool repos builds. Asset names embed
@@ -174,8 +181,8 @@ const TOOL_ORIGINS = {
   // The convention card editor. Named for what it is rather than its repo
   // (convention-card), and no TOOLS entry above: it has no CLI release.
   '/card': 'https://convention-card.pages.dev',
-  // Nelson Ford's CardShark BidBase rules on the bidbase port's engine; no
-  // TOOLS entry above: it has no CLI release.
+  // Nelson Ford's CardShark BidBase rules on the bidbase port's engine, and
+  // the practice program at /bidbase/practice/ (its app is in TOOLS above).
   '/bidbase': 'https://bidbase.pages.dev',
 }
 
