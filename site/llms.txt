@@ -24,6 +24,9 @@ listed here.
 ## Docs
 
 - [Convention card](https://bridge-craftwork.com/docs/card/): using the editor.
+- [bridge-solver](https://bridge-craftwork.com/bridge-solver/get.html): every
+  way to use the double-dummy solver and claim checker: in the browser, as
+  command-line tools, from Python (`pip install bridge-solver`) and from C.
 
 ## Source
 

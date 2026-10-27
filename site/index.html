@@ -56,6 +56,9 @@
 .tbtn-ghost{background:transparent;color:var(--accent-strong);border:1px solid var(--color-border-secondary)}
 .tbtn-ghost:hover{border-color:var(--accent)}
 .tile-actions>.tbtn-ghost:only-child{flex:1}
+/* Three secondary buttons (bridge-solver's Download, Docs, Source) do not fit
+   one 260px row at equal widths; let them keep their text's width and wrap. */
+.tile-actions.wrap-ghost>.tbtn-ghost{flex:1 1 auto;min-width:max-content}
 
 /* The detected platform, and the way out of a wrong guess. Empty until the
    page confirms one, so a no-JS visitor sees only the "other platforms" link
@@ -211,11 +214,12 @@
       </div>
       <div class="tile-body">
         <div class="tile-name">bridge-solver</div>
-        <div class="tile-desc">Fast double-dummy solver with par scoring, cardplay analysis and PBN processing.</div>
-        <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
-        <div class="tile-actions">
+        <div class="tile-desc">Fast double-dummy solver with par scoring, cardplay analysis and a claim checker. Also for Python (<code>pip install bridge-solver</code>) and C.</div>
+        <div class="tile-tags"><span class="tag tag-slate">v2.1.0</span><span class="tag tag-blue">Runs offline</span></div>
+        <div class="tile-actions wrap-ghost">
           <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="bridge-solver" data-phase2="/bridge-solver/" href="/bridge-solver/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" data-dl="bridge-solver" href="https://github.com/bridge-craftwork/bridge-solver/releases/latest">Download CLI</a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="/bridge-solver/get.html">Docs</a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/bridge-solver">Source</a>
         </div>
         <div class="tile-alt"><span class="dl-plat" data-dl-label></span><a href="https://github.com/bridge-craftwork/bridge-solver/releases/latest" target="_blank" rel="noopener">other platforms</a></div>
