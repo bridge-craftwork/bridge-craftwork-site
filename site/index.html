@@ -162,6 +162,17 @@
 .footer-link:hover{color:var(--color-text-primary)}
 .footer-copy{font-size:13px;color:var(--color-text-tertiary);line-height:1.6}
 
+/* bridge-craftwork-dd — BBO's result column with the extension's tags */
+.thumb-dd{background:#F4F5F7;padding:9px 10px;display:flex;flex-direction:column;gap:4px;font-size:10.5px;color:#222}
+.dd-row{background:#fff;border:0.5px solid #dcdee3;border-radius:2px;padding:0 8px;flex:1;display:flex;align-items:center;gap:8px}
+.dd-board{color:#8a8f98;min-width:12px}
+.dd-result{min-width:52px}
+.dd-tags{margin-left:auto;display:flex;gap:7px;font-size:9.5px;font-weight:500}
+.dd-me{color:#C0392B}
+.dd-pd{color:#C2670A}
+.dd-opp{color:#1E8449}
+.dd-clean{color:#1E8449;background:#E3F4E8;border-radius:3px;padding:0 5px}
+
 @media (max-width:600px){.page{padding:28px 14px 36px}.tile{width:100%}}
 </style>
 </head>
@@ -390,6 +401,32 @@
           <a class="tbtn tbtn-try" target="_blank" rel="noopener" href="/card/">Open in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
           <a class="tbtn tbtn-ghost" href="/docs/card/">Docs</a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/convention-card">Source</a>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section>
+  <div class="section-header"><span class="section-label">Browser extensions</span><span class="section-line"></span></div>
+  <p class="section-note">Installed once, then at work inside a site you already use.</p>
+  <div class="tiles">
+
+    <article class="tile">
+      <div class="thumb thumb-dd">
+        <div class="dd-row"><span class="dd-board">1</span><span class="dd-result">4&#9824;E+2</span><span class="dd-tags"><span class="dd-me">me 1</span><span class="dd-pd">pd 1</span><span class="dd-opp">opp 1</span></span></div>
+        <div class="dd-row"><span class="dd-board">2</span><span class="dd-result">6<span class="red">&#9829;</span>W+1</span><span class="dd-tags"><span class="dd-clean">clean</span></span></div>
+        <div class="dd-row"><span class="dd-board">3</span><span class="dd-result">4<span class="red">&#9829;</span>W=</span><span class="dd-tags"><span class="dd-me">me 1</span><span class="dd-opp">opp 2</span></span></div>
+        <div class="dd-row"><span class="dd-board">4</span><span class="dd-result">5<span class="red">&#9830;</span>W=</span><span class="dd-tags"><span class="dd-clean">clean</span></span></div>
+      </div>
+      <div class="tile-body">
+        <div class="tile-name">Bridge Craftwork DD</div>
+        <div class="tile-desc">Double-dummy review in Bridge Base Online&#8217;s History panel: every card that cost a trick, and what should have been played instead.</div>
+        <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">4 browsers</span><span class="tag tag-amber">Coming soon</span></div>
+        <div class="tile-actions">
+          <a class="tbtn tbtn-try" href="/dd/">Learn more</a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/bridge-classroom-fetch">Source</a>
         </div>
       </div>
     </article>

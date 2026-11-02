@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bridge Craftwork DD &#183; Bridge Craftwork</title>
+<link rel="canonical" href="https://bridge-craftwork.com/dd/">
+<meta name="description" content="A browser extension that adds double-dummy review to Bridge Base Online's History panel: every card that cost a trick, and what should have been played instead.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/styles.css">
+<style>
+:root{--accent:#475569;--accent-strong:#334155;--accent-soft:#EEF1F5}
+body{background:var(--color-background-tertiary)}
+.page{max-width:1000px;margin:0 auto;padding:32px 20px 48px}
+.back{display:inline-block;font-size:14px;color:var(--color-text-secondary);text-decoration:none;margin-bottom:18px}
+.back:hover{color:var(--color-text-primary)}
+.layout{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:32px;align-items:start}
+h1{font-size:28px;font-weight:500;margin-bottom:8px}
+.lede{font-size:17px;color:var(--color-text-secondary);line-height:1.55;margin-bottom:18px}
+h2{font-size:14px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.07em;margin:24px 0 8px}
+p,li{font-size:15px;line-height:1.6;color:var(--color-text-primary)}
+ul{margin:0 0 0 20px}
+li{margin-bottom:6px}
+a{color:var(--accent-strong)}
+
+.install{margin-top:22px}
+.install-label{font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:8px}
+.install-btn{display:block;width:100%;max-width:300px;box-sizing:border-box;background:var(--accent);color:#fff;text-align:center;text-decoration:none;font-size:16px;font-weight:500;padding:11px 18px;border-radius:var(--border-radius-md);transition:background 0.15s}
+.install-btn:hover{background:var(--accent-strong)}
+.install-btn.off{background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:default}
+.install-sub{display:block;font-size:12px;font-weight:400;opacity:0.85;margin-top:2px}
+.others{font-size:13px;color:var(--color-text-tertiary);margin-top:10px}
+.others[hidden]{display:none}
+
+.links{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:22px;font-size:14px}
+
+figure{margin:0 0 18px}
+figure img{display:block;width:100%;height:auto;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg)}
+figcaption{font-size:13px;color:var(--color-text-secondary);margin-top:6px;line-height:1.45}
+
+@media (max-width:760px){.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="page">
+<a class="back" href="/">&#8592; All tools</a>
+<div class="layout">
+  <div>
+    <h1>Bridge Craftwork DD</h1>
+    <p class="lede">See where the tricks went. A browser extension that adds double-dummy review to the History panel of Bridge Base Online&#8217;s web client.</p>
+
+    <h2>For every board you open</h2>
+    <ul>
+      <li>The cards that cost a trick are marked in the hands, with the trick they were played to.</li>
+      <li>Click one and the viewer steps to that trick. The hand that erred shows what it should have played: the best cards in green, the rest in red.</li>
+      <li>The card that led and the card that won each trick are marked on the table.</li>
+      <li>Each board in the list is tagged with the errors by you, your partner and the opponents, or &#8220;clean&#8221;. The event&#8217;s totals sit beside BBO&#8217;s own score.</li>
+      <li>DD Details opens the board in the detailed double-dummy viewer, by way of Bridge Classroom.</li>
+    </ul>
+
+    <h2>On your device</h2>
+    <p>The solver runs inside the extension. Nothing is sent to a server for analysis, unless you choose DD Details for a board. No analytics, no tracking, no accounts. Hide or show it any time from the menu on BBO&#8217;s deal view.</p>
+
+    <div class="install">
+      <div class="install-label">Install for your browser</div>
+      <a class="install-btn off" id="installBtn" aria-disabled="true"><span id="installText">Coming soon</span><span class="install-sub" id="installSub">Chrome, Edge, Firefox and Safari on Mac</span></a>
+      <div class="others" id="others" hidden></div>
+    </div>
+
+    <div class="links">
+      <a href="https://bridge-craftwork.github.io/bridge-classroom-fetch/demo/dd/bridge-craftwork-dd.mp4">Watch the demo</a>
+      <a href="/dd/privacy/">Privacy policy</a>
+      <a href="https://github.com/bridge-craftwork/bridge-classroom-fetch">Source</a>
+      <a href="https://github.com/bridge-craftwork/bridge-classroom-fetch/issues">Support</a>
+    </div>
+  </div>
+
+  <div>
+    <figure>
+      <img src="screenshots/dd-1-event.png" width="1280" height="800" alt="BBO's History panel with error tags on each board, event totals in the footer, and error cards marked in the hands">
+      <figcaption>Every board tagged, the event totalled, the error cards marked.</figcaption>
+    </figure>
+    <figure>
+      <img src="screenshots/dd-3-trick.png" width="1280" height="800" loading="lazy" alt="A trick on BBO's table with the lead and winner marked, and the erring hand's cards in green and red">
+      <figcaption>Click an error to go to its trick and see the alternatives.</figcaption>
+    </figure>
+  </div>
+</div>
+</main>
+
+<script>
+/* The install button, for the browser in front of it. Fill in each url as that
+   store publishes the listing: until then the browser reads "Coming soon", and
+   is left out of the "Also available for" row. No JavaScript leaves the
+   "Coming soon" wording in the markup, which names all four. */
+(function () {
+  var STORES = {
+    chrome:  { name: 'Chrome',  store: 'Chrome Web Store', url: null },
+    edge:    { name: 'Edge',    store: 'Edge Add-ons',     url: null },
+    firefox: { name: 'Firefox', store: 'Firefox Add-ons',  url: null },
+    safari:  { name: 'Safari',  store: 'Mac App Store',    url: null }
+  }
+
+  var ua = navigator.userAgent
+  var btn = document.getElementById('installBtn')
+  var text = document.getElementById('installText')
+  var sub = document.getElementById('installSub')
+  var others = document.getElementById('others')
+
+  /* The same test as the home page's: an iPad in desktop mode reports
+     "Macintosh", and only maxTouchPoints tells it from a Mac. */
+  var mobile = /iPhone|iPod|iPad|Android/i.test(ua) ||
+               (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ||
+               (navigator.userAgentData && navigator.userAgentData.mobile === true)
+
+  if (mobile) {
+    text.textContent = 'Desktop browsers only'
+    sub.textContent = 'Chrome, Edge, Firefox and Safari on Mac'
+    return
+  }
+
+  var detected = ua.indexOf('Edg/') >= 0 ? 'edge'
+               : ua.indexOf('Firefox/') >= 0 ? 'firefox'
+               : ua.indexOf('Chrome/') >= 0 ? 'chrome'
+               : ua.indexOf('Safari/') >= 0 ? 'safari' : null
+
+  var current = detected && STORES[detected]
+  if (current) {
+    sub.textContent = current.store
+    if (current.url) {
+      text.textContent = 'Install for ' + current.name
+      btn.href = current.url
+      btn.target = '_blank'
+      btn.rel = 'noopener'
+      btn.classList.remove('off')
+      btn.removeAttribute('aria-disabled')
+    } else {
+      text.textContent = 'Coming soon to ' + current.name
+    }
+  }
+
+  var rest = Object.keys(STORES).filter(function (k) { return k !== detected && STORES[k].url })
+  if (rest.length) {
+    if (!current) text.textContent = 'Choose your browser below'
+    others.textContent = current && current.url ? 'Also available for: ' : 'Available for: '
+    rest.forEach(function (k, i) {
+      if (i) others.appendChild(document.createTextNode(' · '))
+      var a = document.createElement('a')
+      a.href = STORES[k].url
+      a.target = '_blank'
+      a.rel = 'noopener'
+      a.textContent = STORES[k].name
+      others.appendChild(a)
+    })
+    others.hidden = false
+  }
+})()
+</script>
+</body>
+</html>
