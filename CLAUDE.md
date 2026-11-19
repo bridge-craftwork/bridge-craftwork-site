@@ -75,20 +75,20 @@ here on a bridge-classroom host because it was convenient.
 The same split everywhere: what the org uses is defined once, what one repo
 uses lives with that repo.
 
-- **GitHub Actions.** Org secrets: `CLOUDFLARE_ACCOUNT_ID`,
-  `CLOUDFLARE_PAGES_DEPLOY_TOKEN` (Cloudflare token `ci-pages-deploy`, Pages
-  only) and the Apple notarization secrets. This repo deploys a Worker, which
-  that token cannot do, so `deploy.yml` still uses its own
-  `CLOUDFLARE_API_TOKEN`. The move to an org `CLOUDFLARE_WORKERS_DEPLOY_TOKEN`
-  (token `ci-workers-deploy`) is on branch `workers-org-token`, waiting for
-  that secret; a run from a branch there uploads a version without deploying
-  it, so the token can be tested safely.
+- **GitHub Actions.** This repo has no secrets of its own. `deploy.yml` reads
+  the org secrets `CLOUDFLARE_WORKERS_DEPLOY_TOKEN` (Cloudflare token
+  `ci-workers-deploy`: Workers Scripts on the account, Workers Routes on
+  bridge-craftwork.com) and `CLOUDFLARE_ACCOUNT_ID`. The org's Pages token,
+  `CLOUDFLARE_PAGES_DEPLOY_TOKEN`, cannot deploy a Worker. A run from a branch
+  uploads a version without deploying it, so a token can be tested safely.
 - **Names say what a thing does,** not who holds it: Cloudflare tokens are
   `<where>-<what>-<access>`, and a secret is named for the token it holds.
-- **On the Mac.** direnv loads the bridge-craftwork org file into every repo
-  of the org, with values from the login Keychain. Managed from the private
-  `family-computing` repo, `tools/secrets/` (its README covers adding,
-  rotating and linking a repo).
+- **On the Mac, and rotation.** 1Password is the source of truth for both
+  sides. `secrets-sync`, in the private `family-computing` repo under
+  `tools/secrets/`, copies values to the login Keychain (which direnv loads
+  into every repo of the org) and to the GitHub org secrets. So rotating is:
+  roll the token, paste it into 1Password, run `secrets-sync`. Its README
+  covers adding a secret and linking a repo.
 
 ## Licence
 
