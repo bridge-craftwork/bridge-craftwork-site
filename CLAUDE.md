@@ -70,6 +70,26 @@ student-facing traffic. Keeping tools and API endpoints off it is deliberate —
 reputation isolation, not just branding. Don't undo it by parking something
 here on a bridge-classroom host because it was convenient.
 
+## Secrets
+
+The same split everywhere: what the org uses is defined once, what one repo
+uses lives with that repo.
+
+- **GitHub Actions.** This repo has no secrets of its own. `deploy.yml` reads
+  the org secrets `CLOUDFLARE_WORKERS_DEPLOY_TOKEN` (Cloudflare token
+  `ci-workers-deploy`: Workers Scripts on the account, Workers Routes on
+  bridge-craftwork.com) and `CLOUDFLARE_ACCOUNT_ID`. The org's Pages token,
+  `CLOUDFLARE_PAGES_DEPLOY_TOKEN`, cannot deploy a Worker. A run from a branch
+  uploads a version without deploying it, so a token can be tested safely.
+- **Names say what a thing does,** not who holds it: Cloudflare tokens are
+  `<where>-<what>-<access>`, and a secret is named for the token it holds.
+- **On the Mac, and rotation.** 1Password is the source of truth for both
+  sides. `secrets-sync`, in the private `family-computing` repo under
+  `tools/secrets/`, copies values to the login Keychain (which direnv loads
+  into every repo of the org) and to the GitHub org secrets. So rotating is:
+  roll the token, paste it into 1Password, run `secrets-sync`. Its README
+  covers adding a secret and linking a repo.
+
 ## Licence
 
 Unlicense (public domain), matching `pbn-to-pdf` and `dealer3`.
