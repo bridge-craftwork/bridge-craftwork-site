@@ -17,7 +17,7 @@ permissions:
 # One in-flight run; a newer push cancels the older, so the deployed Worker is
 # always the newest commit rather than whichever run happened to finish last.
 concurrency:
-  group: deploy-site
+  group: deploy-site-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -26,9 +26,12 @@ jobs:
     env:
       # Mapped to an env var so the steps can be conditioned on the secret's
       # presence — secrets can't be referenced directly in `if:`. Self-gating:
-      # this workflow is a no-op until CLOUDFLARE_API_TOKEN exists, so it is
-      # safe to merge before the Cloudflare side is set up.
-      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      # this workflow is a no-op while the secret is missing.
+      #
+      # The organization's Worker-deploy token (Cloudflare token
+      # ci-workers-deploy), shared with the org's other Workers so it is
+      # rotated in one place. The org's Pages token cannot deploy a Worker.
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_WORKERS_DEPLOY_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -49,8 +52,19 @@ jobs:
       # config. Bridge-Classroom hit that and moved to `npx wrangler` for the
       # same reason. wrangler reads the credentials from these env vars.
       - name: Deploy Worker
-        if: env.CF_API_TOKEN != ''
+        if: env.CF_API_TOKEN != '' && github.ref == 'refs/heads/main'
         run: npx wrangler deploy
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ env.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # A run from any other branch (workflow_dispatch) uploads a version
+      # without routing traffic to it, so it proves the build and the token
+      # with production untouched. Workers have no Pages-style preview, and a
+      # plain `wrangler deploy` from a branch would replace the live site.
+      - name: Upload Worker version (not deployed)
+        if: env.CF_API_TOKEN != '' && github.ref != 'refs/heads/main'
+        run: npx wrangler versions upload --message "branch ${GITHUB_REF_NAME} (${GITHUB_SHA::7}), not deployed"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ env.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
