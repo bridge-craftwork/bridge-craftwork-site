@@ -31,6 +31,12 @@ decisions already locked, and the phase order. The work has not started.
   instead of opening a release page, and still never goes stale. There is no
   CLI build for phones, so the page disables the button there rather than
   offering something that cannot run.
+- **Version chips resolve at request time too.** A tile's chip marked
+  `<span data-release="<repo>">` is rewritten by the Worker (`homePage` in
+  `src/index.js`) to that repo's latest release, from the same cached lookup
+  the downloads use. The text in `index.html` is only the fallback for a
+  failed or slow lookup, so a release never needs an edit here. Chips for
+  things with no full release (the card editor, DD) are still written by hand.
 
 ## Two different things share this domain
 

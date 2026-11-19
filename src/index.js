@@ -1,8 +1,9 @@
 /**
  * bridge-craftwork.com — the apex Worker.
  *
- * Today it does three things: canonicalises the hostname, resolves platform
- * download links, and serves the static site. Cloudflare matches assets before
+ * Today it does four things: canonicalises the hostname, resolves platform
+ * download links, fills the home page's version chips from the latest
+ * releases, and serves the static site. Cloudflare matches assets before
  * invoking this Worker, so a request that reaches the fall-through matched no
  * asset and is handed back to ASSETS for a 404.
  *
@@ -165,6 +166,75 @@ async function download(request, url, ctx) {
   return Response.redirect(`${releasePage}/download/${spec.name(platform, version)}`, 302)
 }
 
+/**
+ * The tool's latest release as a chip label: `v2.2.0` from `v2.2.0`, and
+ * `v0.1.1` from bidbase's `practice-v0.1.1`. Null when there is no tag or it
+ * holds no version, so the caller keeps the chip's own text.
+ */
+function chipLabel(tag) {
+  const m = (tag || '').match(/v?(\d+\.\d+\.\d+[0-9A-Za-z.+-]*)$/)
+  return m ? `v${m[1]}` : null
+}
+
+// How long the home page waits for release lookups before giving up on them.
+// They are cached for an hour, so this only bites on a cold cache with GitHub
+// slow; then the chips keep the versions written in index.html.
+const CHIP_TIMEOUT_MS = 2000
+
+/**
+ * The home page, with each `<span data-release="<repo>">` version chip set to
+ * that repo's latest release. The versions used to be typed into index.html
+ * and went stale at every release (bridge-solver showed v2.1.0 well after
+ * v2.2.0 shipped); now a release shows up within the hour on its own.
+ *
+ * The text in index.html stays as the fallback: a lookup that fails or misses
+ * CHIP_TIMEOUT_MS leaves the chip as written, so this can make the page late by
+ * at most that, and never wrong or broken. A full release also clears a
+ * pre-release chip's amber styling and its "pre-release" title.
+ */
+async function homePage(request, env, ctx) {
+  // Ask ASSETS for the whole page, never a 304: the browser's copy was
+  // rewritten with versions that may since have changed, so its ETag says
+  // nothing about the chips.
+  const headers = new Headers(request.headers)
+  headers.delete('if-none-match')
+  headers.delete('if-modified-since')
+  const page = await env.ASSETS.fetch(new Request(request, { headers }))
+  if (!page.ok || !(page.headers.get('content-type') || '').includes('text/html')) return page
+
+  // Start every lookup at once rather than one per chip as the rewriter
+  // reaches it. TOOLS lists the repos with releases; a chip naming any other
+  // repo is looked up when it is reached.
+  const deadline = new Promise((resolve) => setTimeout(resolve, CHIP_TIMEOUT_MS, null))
+  const lookups = new Map()
+  const lookup = (repo) => {
+    if (!lookups.has(repo)) {
+      const tag = latestTag(repo, ctx).catch(() => null)
+      lookups.set(repo, Promise.race([tag, deadline]))
+    }
+    return lookups.get(repo)
+  }
+  for (const repo of Object.keys(TOOLS)) lookup(repo)
+
+  const rewritten = new HTMLRewriter()
+    .on('[data-release]', {
+      async element(el) {
+        const label = chipLabel(await lookup(el.getAttribute('data-release')))
+        if (!label) return
+        el.setInnerContent(label)
+        el.setAttribute('class', 'tag tag-slate')
+        el.removeAttribute('title')
+      },
+    })
+    .transform(page)
+
+  const out = new Response(rewritten.body, rewritten)
+  out.headers.delete('etag')
+  out.headers.delete('content-length')
+  out.headers.set('cache-control', 'no-cache')
+  return out
+}
+
 // Phase 2 — each tool's browser build, mounted on a path here and served from
 // its own project. The prefix is stripped and the remainder appended to the
 // base, so each origin keeps serving from ITS root and every repo's `_headers`
@@ -262,6 +332,8 @@ export default {
 
     const tool = matchTool(url.pathname)
     if (tool) return proxyTool(request, url, tool)
+
+    if (url.pathname === '/' || url.pathname === '/index.html') return homePage(request, env, ctx)
 
     return env.ASSETS.fetch(request)
   },
