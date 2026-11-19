@@ -70,6 +70,23 @@ student-facing traffic. Keeping tools and API endpoints off it is deliberate —
 reputation isolation, not just branding. Don't undo it by parking something
 here on a bridge-classroom host because it was convenient.
 
+## Secrets
+
+The same split everywhere: what the org uses is defined once, what one repo
+uses lives with that repo.
+
+- **GitHub Actions.** Org secrets: `CLOUDFLARE_ACCOUNT_ID`,
+  `CLOUDFLARE_PAGES_DEPLOY_TOKEN` (Pages only) and the Apple notarization
+  secrets. This repo deploys a Worker, which that token cannot do, so
+  `deploy.yml` still uses its own `CLOUDFLARE_API_TOKEN`. The move to an org
+  `CLOUDFLARE_WORKERS_DEPLOY_TOKEN` is on branch `workers-org-token`, waiting
+  for that secret; a run from a branch there uploads a version without
+  deploying it, so the token can be tested safely.
+- **On the Mac.** direnv loads the bridge-craftwork org file into every repo
+  of the org, with values from the login Keychain. Managed from the private
+  `family-computing` repo, `tools/secrets/` (its README covers adding,
+  rotating and linking a repo).
+
 ## Licence
 
 Unlicense (public domain), matching `pbn-to-pdf` and `dealer3`.
