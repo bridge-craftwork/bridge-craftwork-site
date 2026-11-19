@@ -226,7 +226,7 @@
       <div class="tile-body">
         <div class="tile-name">bridge-solver</div>
         <div class="tile-desc">Fast double-dummy solver with par scoring, cardplay analysis and a claim checker. Also for Python (<code>pip install bridge-solver</code>) and C.</div>
-        <div class="tile-tags"><span class="tag tag-slate">v2.1.0</span><span class="tag tag-blue">Runs offline</span></div>
+        <div class="tile-tags"><span class="tag tag-slate" data-release="bridge-solver">v2.2.0</span><span class="tag tag-blue">Runs offline</span></div>
         <div class="tile-actions wrap-ghost">
           <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="bridge-solver" data-phase2="/bridge-solver/" href="/bridge-solver/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" data-dl="bridge-solver" href="https://github.com/bridge-craftwork/bridge-solver/releases/latest">Download CLI</a>
@@ -249,7 +249,7 @@
       <div class="tile-body">
         <div class="tile-name">dealer3</div>
         <div class="tile-desc">Rust rebuild of the classic <span class="mono">dealer.exe</span> hand generator &#8212; runs its scripts, accepts its command line.</div>
-        <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
+        <div class="tile-tags"><span class="tag tag-slate" data-release="dealer3">v1.1.0</span><span class="tag tag-blue">Runs offline</span></div>
         <div class="tile-actions">
           <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="dealer3" data-phase2="/dealer3/" href="/dealer3/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" data-dl="dealer3" href="https://github.com/bridge-craftwork/dealer3/releases/latest">Download CLI</a>
@@ -279,7 +279,7 @@
       <div class="tile-body">
         <div class="tile-name">PBN to PDF</div>
         <div class="tile-desc">Turn a PBN file into printable hand diagrams, declarer&#8217;s-plan worksheets and bidding sheets.</div>
-        <div class="tile-tags"><span class="tag tag-slate">v0.18.0</span><span class="tag tag-blue">Runs offline</span></div>
+        <div class="tile-tags"><span class="tag tag-slate" data-release="pbn-to-pdf">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
         <div class="tile-actions">
           <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="pbn-to-pdf" data-phase2="/pbn-to-pdf/" href="/pbn-to-pdf/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" data-dl="pbn-to-pdf" href="https://github.com/bridge-craftwork/pbn-to-pdf/releases/latest">Download CLI</a>
@@ -304,7 +304,7 @@
       <div class="tile-body">
         <div class="tile-name">PDF Handouts</div>
         <div class="tile-desc">Merge PDFs and screenshots into a handout with custom headers and footers.</div>
-        <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
+        <div class="tile-tags"><span class="tag tag-slate" data-release="pdf-handouts">v1.0.0</span><span class="tag tag-blue">Runs offline</span></div>
         <div class="tile-actions">
           <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="pdf-handouts" data-phase2="/pdf-handouts/" href="/pdf-handouts/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" data-dl="pdf-handouts" href="https://github.com/bridge-craftwork/pdf-handouts/releases/latest">Download CLI</a>
@@ -314,10 +314,9 @@
       </div>
     </article>
 
-    <!-- rusty-bidding-bot: only a pre-release so far (v0.1.0-rc1), hence the
-         amber version chip. Download CLI still goes through /download/, which
-         hands over the release list until a full release exists and the file
-         itself after (see needsRelease in src/index.js).
+    <!-- rusty-bidding-bot: its first releases were pre-releases (v0.1.0-rc1),
+         which GitHub's releases/latest skips; Download CLI goes through
+         /download/, which copes either way (see needsRelease in src/index.js).
          "Mostly offline": the engine and the convention cards ship with the page,
          but Practice Bidding Scenarios boards are fetched from GitHub at run
          time; random deals, dealer3 scripts and pasted deals need no network. -->
@@ -335,7 +334,7 @@
       <div class="tile-body">
         <div class="tile-name">rusty-bidding-bot</div>
         <div class="tile-desc">Rule-based bidding engine that bids all four hands and shows why it made each call.</div>
-        <div class="tile-tags"><span class="tag tag-amber" title="Pre-release: no full release yet">v0.1.0-rc1</span><span class="tag tag-blue" title="Random deals, dealer3 scripts and your own deals work offline; Practice Bidding Scenarios boards are fetched from GitHub">Mostly offline</span></div>
+        <div class="tile-tags"><span class="tag tag-slate" data-release="rusty-bidding-bot">v0.17.0</span><span class="tag tag-blue" title="Random deals, dealer3 scripts and your own deals work offline; Practice Bidding Scenarios boards are fetched from GitHub">Mostly offline</span></div>
         <div class="tile-actions">
           <a class="tbtn tbtn-try" target="_blank" rel="noopener" data-tool="rusty-bidding-bot" href="/rusty-bidding-bot/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" data-dl="rusty-bidding-bot" href="https://github.com/bridge-craftwork/rusty-bidding-bot/releases/latest">Download CLI</a>
@@ -367,7 +366,7 @@
       <div class="tile-body">
         <div class="tile-name">BidBase</div>
         <div class="tile-desc">Nelson Ford&#8217;s CardShark BidBase: 16,000 bidding rules, with his Bidding Practice program ported from Visual Basic.</div>
-        <div class="tile-tags"><span class="tag tag-slate">v0.1.1</span><span class="tag tag-blue">Runs offline</span></div>
+        <div class="tile-tags"><span class="tag tag-slate" data-release="bidbase">v0.1.1</span><span class="tag tag-blue">Runs offline</span></div>
         <div class="tile-actions">
           <a class="tbtn tbtn-try" target="_blank" rel="noopener" href="/bidbase/">Run in browser <svg class="ext" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg></a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="/bidbase/practice/">Practice</a>
