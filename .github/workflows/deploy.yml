@@ -28,10 +28,10 @@ jobs:
       # presence — secrets can't be referenced directly in `if:`. Self-gating:
       # this workflow is a no-op while the secret is missing.
       #
-      # The token is the organization's, shared with the other tools' sites so
-      # it is rotated in one place. It needs Workers Scripts: Edit as well as
-      # Pages, since this repo deploys a Worker.
-      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_DEPLOY_TOKEN }}
+      # The organization's Worker-deploy token (Cloudflare token
+      # ci-workers-deploy), shared with the org's other Workers so it is
+      # rotated in one place. The org's Pages token cannot deploy a Worker.
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_WORKERS_DEPLOY_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
