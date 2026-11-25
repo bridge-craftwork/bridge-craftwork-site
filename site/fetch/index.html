@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bridge Classroom Fetch &#183; Bridge Craftwork</title>
+<link rel="canonical" href="https://bridge-craftwork.com/fetch/">
+<meta name="description" content="A browser extension that sends a whole bridge game from ACBL Live, ACBL Live for Clubs or Bridge Base Online to Bridge Classroom for analysis, in one click.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/styles.css">
+<style>
+:root{--accent:#475569;--accent-strong:#334155;--accent-soft:#EEF1F5}
+body{background:var(--color-background-tertiary)}
+.page{max-width:1000px;margin:0 auto;padding:32px 20px 48px}
+.back{display:inline-block;font-size:14px;color:var(--color-text-secondary);text-decoration:none;margin-bottom:18px}
+.back:hover{color:var(--color-text-primary)}
+.layout{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:32px;align-items:start}
+h1{font-size:28px;font-weight:500;margin-bottom:8px}
+.lede{font-size:17px;color:var(--color-text-secondary);line-height:1.55;margin-bottom:18px}
+h2{font-size:14px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.07em;margin:24px 0 8px}
+p,li{font-size:15px;line-height:1.6;color:var(--color-text-primary)}
+ul{margin:0 0 0 20px}
+li{margin-bottom:6px}
+a{color:var(--accent-strong)}
+
+.install{margin-top:22px}
+.install-label{font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:8px}
+.install-btn{display:block;width:100%;max-width:300px;box-sizing:border-box;background:var(--accent);color:#fff;text-align:center;text-decoration:none;font-size:16px;font-weight:500;padding:11px 18px;border-radius:var(--border-radius-md);transition:background 0.15s}
+.install-btn:hover{background:var(--accent-strong)}
+.install-btn.off{background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:default}
+.install-sub{display:block;font-size:12px;font-weight:400;opacity:0.85;margin-top:2px}
+.others{font-size:13px;color:var(--color-text-tertiary);margin-top:10px}
+.others[hidden]{display:none}
+
+.links{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:22px;font-size:14px}
+
+figure{margin:0 0 18px}
+figure img{display:block;width:100%;height:auto;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg)}
+figcaption{font-size:13px;color:var(--color-text-secondary);margin-top:6px;line-height:1.45}
+
+@media (max-width:760px){.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="page">
+<a class="back" href="/">&#8592; All tools</a>
+<div class="layout">
+  <div>
+    <h1>Bridge Classroom Fetch</h1>
+    <p class="lede">Your game, in one click. A browser extension that takes the results page you are already looking at and sends the whole game to <a href="https://bridge-classroom.org/">Bridge Classroom</a> for analysis.</p>
+
+    <h2>Where it works</h2>
+    <ul>
+      <li><strong>ACBL Live for Clubs</strong>: one club game, or every game in a date range.</li>
+      <li><strong>ACBL Live</strong>: tournament results, one event at a time.</li>
+      <li><strong>Bridge Base Online</strong>: tournament results and single deals. For your own table it also captures the cardplay.</li>
+    </ul>
+
+    <h2>What it does</h2>
+    <p>Click the button it adds to the page. The extension reads that game&#8217;s boards, contracts, scores and comparisons, and opens Bridge Classroom&#8217;s Game Analysis with them, which explains why each board went well or badly. No files to download, and nothing to upload again.</p>
+
+    <h2>What it doesn&#8217;t do</h2>
+    <p>It runs only on those sites, only when you click it, and sends results only to Bridge Classroom. Other players&#8217; real names are deliberately not collected from Bridge Base Online. No analytics, no tracking, no accounts. The ACBL sites and BBO&#8217;s results pages need your own sign-in there; a single BBO deal needs nothing.</p>
+
+    <div class="install">
+      <div class="install-label">Install for your browser</div>
+      <a class="install-btn" id="installBtn" href="#others"><span id="installText">Choose your browser below</span><span class="install-sub" id="installSub">Chrome, Edge, Firefox, and Safari on iPhone and iPad</span></a>
+      <div class="others" id="others">Available for:
+        <a href="https://chromewebstore.google.com/detail/bridge-classroom-fetch/cpokagdkdagcojoogocjheefiicacnca" target="_blank" rel="noopener">Chrome</a> &#183;
+        <a href="https://microsoftedge.microsoft.com/addons/detail/pjomfmbcmaiikkfcnnpnlblmpokbcdei" target="_blank" rel="noopener">Edge</a> &#183;
+        <a href="https://addons.mozilla.org/en-US/firefox/addon/bridge-classroom-fetch/" target="_blank" rel="noopener">Firefox</a> &#183;
+        <a href="https://apps.apple.com/app/bridge-classroom-fetch/id6800538262" target="_blank" rel="noopener">Safari on iPhone and iPad</a>.
+        Safari on Mac: coming soon.</div>
+    </div>
+
+    <div class="links">
+      <a href="https://bridge-craftwork.github.io/bridge-classroom-fetch/demo/">Watch the demos</a>
+      <a href="https://bridge-classroom.org/privacy#extension">Privacy policy</a>
+      <a href="https://github.com/bridge-craftwork/bridge-classroom-fetch">Source</a>
+      <a href="https://github.com/bridge-craftwork/bridge-classroom-fetch/issues">Support</a>
+    </div>
+  </div>
+
+  <div>
+    <figure>
+      <img src="screenshots/fetch-1-choose-range.png" width="1280" height="800" alt="ACBL Live for Clubs with the Analyze in Bridge Classroom button and its date-range menu">
+      <figcaption>On your club&#8217;s results page: pick one game or a date range.</figcaption>
+    </figure>
+    <figure>
+      <img src="screenshots/fetch-2-analysis.png" width="1280" height="800" loading="lazy" alt="Bridge Classroom's Game Analysis showing error rate and matchpoint percentage across six club games">
+      <figcaption>The games arrive in Bridge Classroom&#8217;s Game Analysis.</figcaption>
+    </figure>
+    <figure>
+      <img src="screenshots/fetch-3-bbo-deal.png" width="1280" height="800" loading="lazy" alt="A Bridge Base Online deal with a Bridge Classroom button in its row of controls">
+      <figcaption>On Bridge Base Online, a Bridge Classroom button beside BBO&#8217;s own.</figcaption>
+    </figure>
+  </div>
+</div>
+</main>
+
+<script>
+/* The install button, for the browser in front of it. Without JavaScript it
+   points at the list below, which names every store. Safari on Mac is still in
+   review: when it is approved, give mac a url and drop "coming soon". */
+(function () {
+  var STORES = {
+    chrome:  { name: 'Chrome',  store: 'Chrome Web Store', url: 'https://chromewebstore.google.com/detail/bridge-classroom-fetch/cpokagdkdagcojoogocjheefiicacnca' },
+    edge:    { name: 'Edge',    store: 'Edge Add-ons',     url: 'https://microsoftedge.microsoft.com/addons/detail/pjomfmbcmaiikkfcnnpnlblmpokbcdei' },
+    firefox: { name: 'Firefox', store: 'Firefox Add-ons',  url: 'https://addons.mozilla.org/en-US/firefox/addon/bridge-classroom-fetch/' },
+    ios:     { name: 'Safari',  store: 'App Store',        url: 'https://apps.apple.com/app/bridge-classroom-fetch/id6800538262' },
+    mac:     { name: 'Safari on Mac', store: 'Mac App Store', url: null }
+  }
+  var ua = navigator.userAgent
+  /* The same test as the home page's: an iPad in desktop mode reports
+     "Macintosh", and only maxTouchPoints tells it from a Mac. Fetch runs in
+     Safari on iPhone and iPad, so they get the App Store; Android gets the list. */
+  var ios = /iPhone|iPod|iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)
+  var detected = ios ? 'ios'
+               : /Android/i.test(ua) ? null
+               : ua.indexOf('Edg/') >= 0 ? 'edge'
+               : ua.indexOf('Firefox/') >= 0 ? 'firefox'
+               : ua.indexOf('Chrome/') >= 0 ? 'chrome'
+               : ua.indexOf('Safari/') >= 0 ? 'mac' : null
+  var s = detected && STORES[detected]
+  if (!s) return
+  var btn = document.getElementById('installBtn')
+  document.getElementById('installSub').textContent = s.store
+  if (s.url) {
+    document.getElementById('installText').textContent = 'Install for ' + s.name
+    btn.href = s.url
+    btn.target = '_blank'
+    btn.rel = 'noopener'
+  } else {
+    document.getElementById('installText').textContent = 'Coming soon to ' + s.name
+    btn.classList.add('off')
+    btn.removeAttribute('href')
+    btn.setAttribute('aria-disabled', 'true')
+  }
+})()
+</script>
+</body>
+</html>
