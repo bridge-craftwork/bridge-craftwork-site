@@ -172,6 +172,16 @@
 .dd-pd{color:#C2670A}
 .dd-opp{color:#1E8449}
 .dd-clean{color:#1E8449;background:#E3F4E8;border-radius:3px;padding:0 5px}
+/* bridge-classroom-fetch — a club results page with the extension's button and menu */
+.thumb-fetch{background:#F3F6FA;display:flex;flex-direction:column;gap:3px;position:relative;font-size:9.5px;color:#333}
+.fx-bar{background:#1F4E94;display:flex;align-items:center;justify-content:space-between;padding:7px 10px;margin-bottom:3px}
+.fx-logo{font-size:10px;font-weight:700;color:#9CCC65;letter-spacing:0.03em}
+.fx-btn{font-size:8.5px;font-weight:600;background:#1A73E8;color:#fff;border-radius:2px;padding:3px 7px}
+.fx-menu{position:absolute;right:10px;top:28px;background:#fff;border:0.5px solid #CFD6DF;border-radius:2px;box-shadow:0 2px 4px rgba(0,0,0,0.12);display:flex;flex-direction:column;z-index:1}
+.fx-menu span{font-size:8.5px;color:#222;padding:2px 9px;border-bottom:0.5px solid #EEF1F4}
+.fx-menu span:first-child{background:#E8F0FE}
+.fx-row{display:flex;gap:8px;background:#fff;border:0.5px solid #DCDEE3;border-radius:2px;margin:0 10px;padding:2px 6px}
+.fx-link{margin-left:auto;color:#1A73E8}
 
 @media (max-width:600px){.page{padding:28px 14px 36px}.tile{width:100%}}
 </style>
@@ -411,6 +421,26 @@
   <div class="section-header"><span class="section-label">Browser extensions</span><span class="section-line"></span></div>
   <p class="section-note">Installed once, then at work inside a site you already use.</p>
   <div class="tiles">
+
+    <article class="tile">
+      <div class="thumb thumb-fetch">
+        <div class="fx-bar"><span class="fx-logo">ACBL LIVE</span><span class="fx-btn">Analyze in Bridge Classroom</span></div>
+        <div class="fx-menu"><span>Most recent</span><span>Last month</span><span>Last 3 months</span><span>All time</span></div>
+        <div class="fx-row"><span>08/10</span><span>Pairs</span><span class="fx-link">Results</span></div>
+        <div class="fx-row"><span>08/03</span><span>Pairs</span><span class="fx-link">Results</span></div>
+        <div class="fx-row"><span>07/27</span><span>Pairs</span><span class="fx-link">Results</span></div>
+        <div class="fx-row"><span>07/20</span><span>Pairs</span><span class="fx-link">Results</span></div>
+      </div>
+      <div class="tile-body">
+        <div class="tile-name">Bridge Classroom Fetch</div>
+        <div class="tile-desc">One click sends a game from ACBL Live, your club&#8217;s results or Bridge Base Online to Bridge Classroom for analysis.</div>
+        <div class="tile-tags"><span class="tag tag-slate">v1.1.0</span><span class="tag tag-blue">Browsers &amp; iPhone</span></div>
+        <div class="tile-actions">
+          <a class="tbtn tbtn-try" href="/fetch/">Learn more</a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/bridge-classroom-fetch">Source</a>
+        </div>
+      </div>
+    </article>
 
     <article class="tile">
       <div class="thumb thumb-dd">
