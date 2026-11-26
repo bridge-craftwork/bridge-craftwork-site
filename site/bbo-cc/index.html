@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Better BBO Convention Card &#183; Bridge Craftwork</title>
+<link rel="canonical" href="https://bridge-craftwork.com/bbo-cc/">
+<meta name="description" content="A browser extension for Bridge Base Online's convention cards: printing that fits, ACBL PDFs, import and export as JSON or PDF, and full-size tabs.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/styles.css">
+<style>
+:root{--accent:#475569;--accent-strong:#334155;--accent-soft:#EEF1F5}
+body{background:var(--color-background-tertiary)}
+.page{max-width:1000px;margin:0 auto;padding:32px 20px 48px}
+.back{display:inline-block;font-size:14px;color:var(--color-text-secondary);text-decoration:none;margin-bottom:18px}
+.back:hover{color:var(--color-text-primary)}
+.layout{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:32px;align-items:start}
+h1{font-size:28px;font-weight:500;margin-bottom:8px}
+.lede{font-size:17px;color:var(--color-text-secondary);line-height:1.55;margin-bottom:18px}
+h2{font-size:14px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.07em;margin:24px 0 8px}
+p,li{font-size:15px;line-height:1.6;color:var(--color-text-primary)}
+ul{margin:0 0 0 20px}
+li{margin-bottom:6px}
+a{color:var(--accent-strong)}
+
+.install{margin-top:22px}
+.install-label{font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:8px}
+.install-btn{display:block;width:100%;max-width:300px;box-sizing:border-box;background:var(--accent);color:#fff;text-align:center;text-decoration:none;font-size:16px;font-weight:500;padding:11px 18px;border-radius:var(--border-radius-md);transition:background 0.15s}
+.install-btn:hover{background:var(--accent-strong)}
+.install-btn.off{background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:default}
+.install-sub{display:block;font-size:12px;font-weight:400;opacity:0.85;margin-top:2px}
+.others{font-size:13px;color:var(--color-text-tertiary);margin-top:10px}
+.others[hidden]{display:none}
+
+.links{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:22px;font-size:14px}
+
+figure{margin:0 0 18px}
+figure img{display:block;width:100%;height:auto;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg)}
+figcaption{font-size:13px;color:var(--color-text-secondary);margin-top:6px;line-height:1.45}
+
+@media (max-width:760px){.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="page">
+<a class="back" href="/">&#8592; All tools</a>
+<!-- One column until the screenshots exist; then drop the style and fill the second column. -->
+<div class="layout" style="grid-template-columns:minmax(0,1fr);max-width:680px">
+  <div>
+    <h1>Better BBO Convention Card</h1>
+    <p class="lede">The things Bridge Base Online&#8217;s convention card manager is missing, added right inside it: Account, then Convention cards, in BBO&#8217;s web lobby.</p>
+
+    <h2>On any card</h2>
+    <ul>
+      <li><strong>Print that fits.</strong> BBO&#8217;s Print clips the right-hand column; this prints the whole card across a landscape page.</li>
+      <li><strong>ACBL PDFs.</strong> Download the card as the ACBL Classic or the ACBL New convention card, filled in and ready to print or email.</li>
+      <li><strong>Open in a tab.</strong> See and edit the card at full size instead of in BBO&#8217;s narrow panel.</li>
+      <li><strong>Export JSON.</strong> Save a copy of the card in a portable format.</li>
+      <li><strong>Edit on Bridge Craftwork</strong>, or <strong>Save to Bridge Classroom</strong>. Open the card in the <a href="/card/">card editor</a> here, or in Bridge Classroom, without a file to download and upload again.</li>
+    </ul>
+
+    <h2>On your list of cards</h2>
+    <ul>
+      <li>Export all your cards, and the cards partners have shared with you, in one JSON file.</li>
+      <li>Import cards from a JSON file, from the card editor&#8217;s &#8220;Export for BBO&#8221; file, or from a PDF: one this extension or the card editor made, or any filled-in ACBL convention card or Bridgodex PDF.</li>
+      <li>A card that differs from one already on BBO is never replaced without asking, and the question says which copy is newer when it can tell. After an import, BBO is told the cards changed, so your partners see the new version.</li>
+    </ul>
+
+    <h2>Private by design</h2>
+    <p>It only runs on BBO&#8217;s convention card pages, and only does anything when you click. It talks to BBO with the session BBO&#8217;s page already has and never sees your password. A card goes to the card editor or Bridge Classroom only when you click that button. No analytics, no tracking, no accounts.</p>
+
+    <div class="install">
+      <div class="install-label">Install for your browser</div>
+      <a class="install-btn off" id="installBtn" aria-disabled="true"><span id="installText">Coming soon</span><span class="install-sub" id="installSub">Chrome, Edge, Firefox and Safari on Mac</span></a>
+      <div class="others" id="others" hidden></div>
+    </div>
+
+    <div class="links">
+      <a href="/bbo-cc/privacy/">Privacy policy</a>
+      <a href="https://github.com/bridge-craftwork/Better-BBO-Convention-Card">Source</a>
+      <a href="https://github.com/bridge-craftwork/Better-BBO-Convention-Card/issues">Support</a>
+    </div>
+  </div>
+
+  <!-- Screenshots go here once taken: store/screenshots/listing-1280/ in
+       Better-BBO-Convention-Card, copied to screenshots/ beside this page, as /dd/ does. -->
+</div>
+</main>
+
+<script>
+/* The install button, for the browser in front of it. Fill in each url as that
+   store publishes the listing: until then the browser reads "Coming soon", and
+   is left out of the "Also available for" row. No JavaScript leaves the
+   "Coming soon" wording in the markup, which names all four. */
+(function () {
+  var STORES = {
+    chrome:  { name: 'Chrome',  store: 'Chrome Web Store', url: null },
+    edge:    { name: 'Edge',    store: 'Edge Add-ons',     url: null },
+    firefox: { name: 'Firefox', store: 'Firefox Add-ons',  url: null },
+    safari:  { name: 'Safari',  store: 'Mac App Store',    url: null }
+  }
+
+  var ua = navigator.userAgent
+  var btn = document.getElementById('installBtn')
+  var text = document.getElementById('installText')
+  var sub = document.getElementById('installSub')
+  var others = document.getElementById('others')
+
+  /* The same test as the home page's: an iPad in desktop mode reports
+     "Macintosh", and only maxTouchPoints tells it from a Mac. */
+  var mobile = /iPhone|iPod|iPad|Android/i.test(ua) ||
+               (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ||
+               (navigator.userAgentData && navigator.userAgentData.mobile === true)
+
+  if (mobile) {
+    text.textContent = 'Desktop browsers only'
+    sub.textContent = 'Chrome, Edge, Firefox and Safari on Mac'
+    return
+  }
+
+  var detected = ua.indexOf('Edg/') >= 0 ? 'edge'
+               : ua.indexOf('Firefox/') >= 0 ? 'firefox'
+               : ua.indexOf('Chrome/') >= 0 ? 'chrome'
+               : ua.indexOf('Safari/') >= 0 ? 'safari' : null
+
+  var current = detected && STORES[detected]
+  if (current) {
+    sub.textContent = current.store
+    if (current.url) {
+      text.textContent = 'Install for ' + current.name
+      btn.href = current.url
+      btn.target = '_blank'
+      btn.rel = 'noopener'
+      btn.classList.remove('off')
+      btn.removeAttribute('aria-disabled')
+    } else {
+      text.textContent = 'Coming soon to ' + current.name
+    }
+  }
+
+  var rest = Object.keys(STORES).filter(function (k) { return k !== detected && STORES[k].url })
+  if (rest.length) {
+    if (!current) text.textContent = 'Choose your browser below'
+    others.textContent = current && current.url ? 'Also available for: ' : 'Available for: '
+    rest.forEach(function (k, i) {
+      if (i) others.appendChild(document.createTextNode(' · '))
+      var a = document.createElement('a')
+      a.href = STORES[k].url
+      a.target = '_blank'
+      a.rel = 'noopener'
+      a.textContent = STORES[k].name
+      others.appendChild(a)
+    })
+    others.hidden = false
+  }
+})()
+</script>
+</body>
+</html>

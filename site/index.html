@@ -182,6 +182,14 @@
 .fx-menu span:first-child{background:#E8F0FE}
 .fx-row{display:flex;gap:8px;background:#fff;border:0.5px solid #DCDEE3;border-radius:2px;margin:0 10px;padding:2px 6px}
 .fx-link{margin-left:auto;color:#1A73E8}
+/* better-bbo-convention-card — BBO's card list with the extension's toolbar and ↗ */
+.thumb-bbocc{background:#F4F5F7;display:flex;flex-direction:column;gap:4px;font-size:9.5px;color:#222}
+.cc-bar{background:#f4f4f4;border-bottom:0.5px solid #ccc;display:flex;align-items:center;gap:5px;padding:6px 10px;margin-bottom:2px}
+.cc-label{font-weight:700;font-size:8.5px;white-space:nowrap}
+.cc-btn{white-space:nowrap;font-size:8px;background:#fff;border:0.5px solid #888;border-radius:2px;padding:2px 6px}
+.cc-row{display:flex;align-items:center;gap:8px;background:#fff;border:0.5px solid #DCDEE3;border-radius:2px;margin:0 10px;padding:3px 6px}
+.cc-pd{color:#8a8f98}
+.cc-open{margin-left:auto;border:0.5px solid #888;border-radius:2px;padding:0 5px;font-size:9px}
 
 @media (max-width:600px){.page{padding:28px 14px 36px}.tile{width:100%}}
 </style>
@@ -456,6 +464,24 @@
         <div class="tile-actions">
           <a class="tbtn tbtn-try" href="/dd/">Learn more</a>
           <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/bridge-classroom-fetch">Source</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="tile">
+      <div class="thumb thumb-bbocc">
+        <div class="cc-bar"><span class="cc-label">Better BBO CC:</span><span class="cc-btn">Export my cards</span><span class="cc-btn">Import</span></div>
+        <div class="cc-row"><span>2/1 with partner</span><span class="cc-pd">pard</span><span class="cc-open">&#8599;</span></div>
+        <div class="cc-row"><span>Club card</span><span class="cc-open">&#8599;</span></div>
+        <div class="cc-row"><span>SAYC</span><span class="cc-open">&#8599;</span></div>
+      </div>
+      <div class="tile-body">
+        <div class="tile-name">Better BBO Convention Card</div>
+        <div class="tile-desc">Print your Bridge Base Online convention cards without losing a column, get them as ACBL PDFs, and back them up or move them with one click.</div>
+        <div class="tile-tags"><span class="tag tag-slate">v1.0.0</span><span class="tag tag-blue">4 browsers</span><span class="tag tag-amber">Coming soon</span></div>
+        <div class="tile-actions">
+          <a class="tbtn tbtn-try" href="/bbo-cc/">Learn more</a>
+          <a class="tbtn tbtn-ghost" target="_blank" rel="noopener" href="https://github.com/bridge-craftwork/Better-BBO-Convention-Card">Source</a>
         </div>
       </div>
     </article>
