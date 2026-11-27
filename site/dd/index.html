@@ -49,17 +49,24 @@ figcaption{font-size:13px;color:var(--color-text-secondary);margin-top:6px;line-
     <h1>Bridge Craftwork DD</h1>
     <p class="lede">See where the tricks went. A browser extension that adds double-dummy review to the History panel of Bridge Base Online&#8217;s web client.</p>
 
+    <h2>While you play</h2>
+    <p>Each board is analysed as it ends, so My Table in BBO&#8217;s History is already tagged when you look: pairs and teams events, instant tournaments and robot daylongs.</p>
+
     <h2>For every board you open</h2>
     <ul>
       <li>The cards that cost a trick are marked in the hands, with the trick they were played to.</li>
       <li>Click one and the viewer steps to that trick. The hand that erred shows what it should have played: the best cards in green, the rest in red.</li>
       <li>The card that led and the card that won each trick are marked on the table.</li>
+      <li>A double-dummy table shows what every seat can make in every strain, with the contract played in green and the par contracts in bold. The result at the table sits beside the deal.</li>
       <li>Each board in the list is tagged with the errors by you, your partner and the opponents, or &#8220;clean&#8221;. The event&#8217;s totals sit beside BBO&#8217;s own score.</li>
       <li>DD Details opens the board in the detailed double-dummy viewer, by way of Bridge Classroom.</li>
     </ul>
 
+    <h2>Across your events</h2>
+    <p>Your Recent tournaments list shows each event&#8217;s tally as me-partner-opponents, so you can see how results line up with the errors on each side. A * means some boards are still to do. DD all fills in a whole event; the DD menu fills in today, the last 7 or 30 days, or everything listed.</p>
+
     <h2>On your device</h2>
-    <p>The solver runs inside the extension. Nothing is sent to a server for analysis, unless you choose DD Details for a board. No analytics, no tracking, no accounts. Hide or show it any time from the menu on BBO&#8217;s deal view.</p>
+    <p>The solver runs inside the extension. Nothing is sent to a server for analysis, unless you choose DD Details for a board. Only DD all asks Bridge Base for anything: it requests the boards from its public history pages, one a second, without your login. No analytics, no tracking, no accounts. Hide or show it any time from the menu on BBO&#8217;s deal view.</p>
 
     <div class="install">
       <div class="install-label">Install for your browser</div>
@@ -77,8 +84,12 @@ figcaption{font-size:13px;color:var(--color-text-secondary);margin-top:6px;line-
 
   <div>
     <figure>
-      <img src="screenshots/dd-1-event.png" width="1280" height="800" alt="BBO's History panel with error tags on each board, event totals in the footer, and error cards marked in the hands">
-      <figcaption>Every board tagged, the event totalled, the error cards marked.</figcaption>
+      <img src="screenshots/dd-1-event.png" width="1280" height="800" alt="BBO's History panel with error tags on each board, event totals in the footer, error cards marked in the hands, and a double-dummy table with the contract in green and par in bold">
+      <figcaption>Every board tagged, the event totalled, the error cards marked, and the double-dummy table.</figcaption>
+    </figure>
+    <figure>
+      <img src="screenshots/dd-4-tallies.png" width="1280" height="800" loading="lazy" alt="BBO's Recent tournaments list with a DD column showing each event's errors as me-partner-opponents">
+      <figcaption>Every event&#8217;s errors, you-partner-opponents, beside its score.</figcaption>
     </figure>
     <figure>
       <img src="screenshots/dd-3-trick.png" width="1280" height="800" loading="lazy" alt="A trick on BBO's table with the lead and winner marked, and the erring hand's cards in green and red">
@@ -95,9 +106,9 @@ figcaption{font-size:13px;color:var(--color-text-secondary);margin-top:6px;line-
    "Coming soon" wording in the markup, which names all four. */
 (function () {
   var STORES = {
-    chrome:  { name: 'Chrome',  store: 'Chrome Web Store', url: null },
-    edge:    { name: 'Edge',    store: 'Edge Add-ons',     url: null },
-    firefox: { name: 'Firefox', store: 'Firefox Add-ons',  url: null },
+    chrome:  { name: 'Chrome',  store: 'Chrome Web Store', url: 'https://chromewebstore.google.com/detail/bridge-craftwork-dd/afaopnjobibdnpfaplcfemliaoejpjgl' },
+    edge:    { name: 'Edge',    store: 'Edge Add-ons',     url: 'https://microsoftedge.microsoft.com/addons/detail/oehjjelleedfafdeffbcmnigmolhemem' },
+    firefox: { name: 'Firefox', store: 'Firefox Add-ons',  url: 'https://addons.mozilla.org/en-US/firefox/addon/bridge-craftwork-dd/' },
     safari:  { name: 'Safari',  store: 'Mac App Store',    url: null }
   }
 
