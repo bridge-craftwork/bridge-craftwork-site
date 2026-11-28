@@ -64,13 +64,12 @@ figcaption{font-size:13px;color:var(--color-text-secondary);margin-top:6px;line-
 
     <div class="install">
       <div class="install-label">Install for your browser</div>
-      <a class="install-btn" id="installBtn" href="#others"><span id="installText">Choose your browser below</span><span class="install-sub" id="installSub">Chrome, Edge, Firefox, and Safari on iPhone and iPad</span></a>
+      <a class="install-btn" id="installBtn" href="#others"><span id="installText">Choose your browser below</span><span class="install-sub" id="installSub">Chrome, Edge, Firefox, and Safari on Mac, iPhone and iPad</span></a>
       <div class="others" id="others">Available for:
         <a href="https://chromewebstore.google.com/detail/bridge-classroom-fetch/cpokagdkdagcojoogocjheefiicacnca" target="_blank" rel="noopener">Chrome</a> &#183;
         <a href="https://microsoftedge.microsoft.com/addons/detail/pjomfmbcmaiikkfcnnpnlblmpokbcdei" target="_blank" rel="noopener">Edge</a> &#183;
         <a href="https://addons.mozilla.org/en-US/firefox/addon/bridge-classroom-fetch/" target="_blank" rel="noopener">Firefox</a> &#183;
-        <a href="https://apps.apple.com/app/bridge-classroom-fetch/id6800538262" target="_blank" rel="noopener">Safari on iPhone and iPad</a>.
-        Safari on Mac: coming soon.</div>
+        <a href="https://apps.apple.com/app/bridge-classroom-fetch/id6800538262" target="_blank" rel="noopener">Safari on Mac, iPhone and iPad</a>.</div>
     </div>
 
     <div class="links">
@@ -100,15 +99,15 @@ figcaption{font-size:13px;color:var(--color-text-secondary);margin-top:6px;line-
 
 <script>
 /* The install button, for the browser in front of it. Without JavaScript it
-   points at the list below, which names every store. Safari on Mac is still in
-   review: when it is approved, give mac a url and drop "coming soon". */
+   points at the list below, which names every store. Safari on Mac, iPhone and
+   iPad share one App Store listing. */
 (function () {
   var STORES = {
     chrome:  { name: 'Chrome',  store: 'Chrome Web Store', url: 'https://chromewebstore.google.com/detail/bridge-classroom-fetch/cpokagdkdagcojoogocjheefiicacnca' },
     edge:    { name: 'Edge',    store: 'Edge Add-ons',     url: 'https://microsoftedge.microsoft.com/addons/detail/pjomfmbcmaiikkfcnnpnlblmpokbcdei' },
     firefox: { name: 'Firefox', store: 'Firefox Add-ons',  url: 'https://addons.mozilla.org/en-US/firefox/addon/bridge-classroom-fetch/' },
     ios:     { name: 'Safari',  store: 'App Store',        url: 'https://apps.apple.com/app/bridge-classroom-fetch/id6800538262' },
-    mac:     { name: 'Safari on Mac', store: 'Mac App Store', url: null }
+    mac:     { name: 'Safari', store: 'Mac App Store', url: 'https://apps.apple.com/app/bridge-classroom-fetch/id6800538262' }
   }
   var ua = navigator.userAgent
   /* The same test as the home page's: an iPad in desktop mode reports
